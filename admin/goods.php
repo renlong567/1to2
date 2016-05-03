@@ -127,6 +127,7 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
         $suppliers_exists = 0;
     }
     $smarty->assign('suppliers_exists', $suppliers_exists);
+    $smarty->assign('cfg_lang', $_CFG['lang']);
     $smarty->assign('suppliers_list_name', $suppliers_list_name);
     unset($suppliers_list_name, $suppliers_exists);
 
@@ -243,6 +244,9 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
                 'promote_start_date' => local_date('Y-m-d'),
                 'promote_end_date'   => local_date('Y-m-d', gmstr2tome('+1 month')),
                 'goods_weight'  => 0,
+                'goods_netweight' => 0,
+                'unit_id' => 0,
+                'origin_id' => 0,
                 'give_integral' => -1,
                 'rank_integral' => -1
             );
@@ -257,7 +261,11 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
         /* 根据商品重量的单位重新计算 */
         if ($goods['goods_weight'] > 0)
         {
-            $goods['goods_weight_by_unit'] = ($goods['goods_weight'] >= 1) ? $goods['goods_weight'] : ($goods['goods_weight'] / 0.001);
+            $goods['goods_weight_by_unit'] = $goods['goods_weight'];
+        }
+        if ($goods['goods_netweight'] > 0)
+        {
+            $goods['goods_netweight_by_unit'] = $goods['goods_netweight'];
         }
 
         if (!empty($goods['goods_brief']))
@@ -425,8 +433,11 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
     $smarty->assign('unit_list', get_unit_list());
     $smarty->assign('user_rank_list', get_user_rank_list());
     $smarty->assign('weight_unit', $is_add ? '1' : ($goods['goods_weight'] >= 1 ? '1' : '0.001'));
+    $smarty->assign('netweight_unit', $is_add ? '1' : ($goods['goods_netweight'] >= 1 ? '1' : '0.001'));
     $smarty->assign('cfg', $_CFG);
     $smarty->assign('form_act', $is_add ? 'insert' : ($_REQUEST['act'] == 'edit' ? 'update' : 'insert'));
+    $smarty->assign('unit_info', getUnitList());
+    $smarty->assign('origin_country', getOriginCountry());
     if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     {
         $smarty->assign('is_add', true);
@@ -791,6 +802,8 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     }
 
     /* 处理商品数据 */
+    $goods_name = !empty($_POST['goods_name']) ? $_POST['goods_name'] : '';
+    $goods_desc = !empty($_POST['goods_desc']) ? $_POST['goods_desc'] : '';
     $shop_price = !empty($_POST['shop_price']) ? $_POST['shop_price'] : 0;
     $market_price = !empty($_POST['market_price']) ? $_POST['market_price'] : 0;
     $promote_price = !empty($_POST['promote_price']) ? floatval($_POST['promote_price'] ) : 0;
@@ -798,6 +811,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $promote_start_date = ($is_promote && !empty($_POST['promote_start_date'])) ? local_strtotime($_POST['promote_start_date']) : 0;
     $promote_end_date = ($is_promote && !empty($_POST['promote_end_date'])) ? local_strtotime($_POST['promote_end_date']) : 0;
     $goods_weight = !empty($_POST['goods_weight']) ? $_POST['goods_weight'] * $_POST['weight_unit'] : 0;
+    $goods_netweight = !empty($_POST['goods_netweight']) ? $_POST['goods_netweight'] * $_POST['weight_netunit'] : 0;
     $is_best = isset($_POST['is_best']) ? 1 : 0;
     $is_new = isset($_POST['is_new']) ? 1 : 0;
     $is_hot = isset($_POST['is_hot']) ? 1 : 0;
@@ -818,7 +832,8 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 
     $goods_thumb = (empty($goods_thumb) && !empty($_POST['goods_thumb_url']) && goods_parse_url($_POST['goods_thumb_url'])) ? htmlspecialchars(trim($_POST['goods_thumb_url'])) : $goods_thumb;
     $goods_thumb = (empty($goods_thumb) && isset($_POST['auto_thumb']))? $goods_img : $goods_thumb;
-
+    $unit_id = isset($_POST['unit_id']) ? intval($_POST['unit_id']) : '0';
+    $origin_id = intval($_POST['origin_id']);
     /* 入库 */
     if ($is_insert)
     {

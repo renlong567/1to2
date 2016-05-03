@@ -300,7 +300,19 @@
             <td class="label">{$lang.lab_goods_weight}</td>
             <td><input type="text" name="goods_weight" value="{$goods.goods_weight_by_unit}" size="20" /> <select name="weight_unit">{html_options options=$unit_list selected=$weight_unit}</select></td>
           </tr>
-          {/if}
+        <tr>
+          <td class="label">{$lang.lab_goods_netweight}</td>
+          <td><input type="text" name="goods_netweight" value="{$goods.goods_netweight_by_unit}" size="20" /> <select name="weight_netunit">{html_options options=$unit_list selected=$netweight_unit}</select><span class="require-field">*</span></td></td>
+        </tr>
+        {/if}
+        <tr>
+          <td class="label">{$lang.lab_goods_unit}</td>
+          <td><select name="unit_id"><option value="">请选择</option>{foreach from=$unit_info item=val}<option {if $goods.unit_id eq $val.unit_id}selected="selected"{/if} value="{$val.unit_id}" >{$val.unit_name}</option>{/foreach}</select><span class="require-field">*</span></td></td>
+        </tr>
+        <tr>
+          <td class="label">{$lang.lab_origin_country}</td>
+          <td><select name="origin_id"><option value="">请选择</option>{foreach from=$origin_country item=val}<option {if $goods.origin_id eq $val.origin_id}selected="selected"{/if} value="{$val.origin_id}" >{$val.origin_name}</option>{/foreach}</select><span class="require-field">*</span></td>
+        </tr>
           {if $cfg.use_storage}
           <tr>
             <td class="label"><a href="javascript:showNotice('noticeStorage');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a> {$lang.lab_goods_number}</td>
@@ -554,10 +566,15 @@
 
   function validate(goods_id)
   {
-      var validator = new Validator('theForm');
-      var goods_sn  = document.forms['theForm'].elements['goods_sn'].value;
+        var validator = new Validator('theForm');
+        var goods_sn  = document.forms['theForm'].elements['goods_sn'].value;
 
-      validator.required('goods_name', goods_name_not_null);
+        validator.required('goods_name', goods_name_not_null);
+        validator.required('origin_id', '请选择原产国。');//WangMin 2015-08-06
+        validator.required('unit_id', '请选择规格。');//WangMin 2015-08-06
+        validator.required('goods_weight', '商品毛重不能为空。');//WangMin 2015-08-06
+        validator.required('goods_netweight', '商品净重不能为空。');//WangMin 2015-08-06
+
       if (document.forms['theForm'].elements['cat_id'].value == 0)
       {
           validator.addErrorMsg(goods_cat_not_null);
