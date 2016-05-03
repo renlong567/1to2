@@ -1,0 +1,105 @@
+<!-- $Id: link_info.htm 16752 2009-10-20 09:59:38Z wangleisvn $ -->
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+<script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
+<link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
+<style>
+hr{
+	border: 0px solid #d7d7d7;
+	height:1px;
+	background: #c43926;
+	margin:10px 0px;
+}
+</style>
+<div class="list-div" style="margin-bottom: 5px">
+<form action="custom_list.php?act=savedata&cusid={$custom.cusid}" method="post" name="theForm">
+<table width="100%" cellpadding="3" cellspacing="1">
+	  <tr>
+		<th colspan="6">
+			基本信息
+		</th>
+	  </tr>
+	  <tr>
+		<td width="13%"><div align="right"><strong>订单号:</strong></div></td>
+		<td width="20%">{$custom.order_sn}</td>
+		<td width="13%"><div align="right"><strong>需要报单:</strong></div></td>
+		<td width="20%">
+				<select name="sendstatus" id="sendstatus">
+					<option value="1" {if $custom.sendstatus eq '1'} selected {/if}>是</option>
+					<option value="0" {if $custom.sendstatus eq '0'} selected {/if}>否</option>
+				</select>
+		</td>
+		<td width="13%"><div align="right"><strong>状态</strong></div></td>
+		<td>
+				<select name="status" id="status">
+					<option value="1" {if $custom.status eq '1'} selected {/if}>已完成</option>
+					<option value="0" {if $custom.status eq '0'} selected {/if}>未完成</option>
+				</select>			
+		</td>
+	  </tr>
+		<tr>
+		<td width="13%"><div align="right"><strong>海关单:</strong></div></td>
+		<td width="20%">
+				<select name="orderstatus" id="orderstatus">
+					<option value="1" {if $custom.orderstatus eq '1'} selected {/if}>未审核</option>
+					<option value="2" {if $custom.orderstatus eq '2'} selected {/if}>未报</option>
+					<option value="3" {if $custom.orderstatus eq '3'} selected {/if}>已报</option>
+					<option value="4" {if $custom.orderstatus eq '4'} selected {/if}>错误</option>
+					<option value="5" {if $custom.orderstatus eq '5'} selected {/if}>成功</option>
+				</select>	
+		
+		</td>
+		<td width="13%"><div align="right"><strong>支付单:</strong></div></td>
+		<td width="20%">
+				<select name="paymentstatus" id="paymentstatus">
+					<option value="1" {if $custom.paymentstatus eq '1'} selected {/if}>未审核</option>
+					<option value="2" {if $custom.paymentstatus eq '2'} selected {/if}>未报</option>
+					<option value="3" {if $custom.paymentstatus eq '3'} selected {/if}>已报</option>
+					<option value="4" {if $custom.paymentstatus eq '4'} selected {/if}>错误</option>
+					<option value="5" {if $custom.paymentstatus eq '5'} selected {/if}>成功</option>
+				</select>
+		</td>
+		<td width="13%"><div align="right"><strong>物流单:</strong></div></td>
+		<td>
+				<select name="shippingstatus" id="shippingstatus">
+					<option value="1" {if $custom.shippingstatus eq '1'} selected {/if}>未审核</option>
+					<option value="2" {if $custom.shippingstatus eq '2'} selected {/if}>未报</option>
+					<option value="3" {if $custom.shippingstatus eq '3'} selected {/if}>已报</option>
+					<option value="4" {if $custom.shippingstatus eq '4'} selected {/if}>错误</option>
+					<option value="5" {if $custom.shippingstatus eq '5'} selected {/if}>成功</option>
+				</select>		
+		
+		</td>
+		</tr>
+		
+		<tr>
+		<td width="13%"><div align="right"><strong>报送日期:</strong></div></td>
+		<td width="20%">
+		{$custom.sendorderdate}
+	
+		
+		</td>
+		<td width="13%"><div align="right"><strong>报送日期:</strong></div></td>
+		<td width="20%">
+		{$custom.sendpaymentdate}
+
+		</td>
+		<td width="13%"><div align="right"><strong>物流单:</strong></div></td>
+		<td>
+		{$custom.sendshippingdate}		
+		
+		</td>
+		</tr>
+	<tr>
+    <td><div align="right"></div>
+      <div align="right"><strong>当前可执行操作：</strong> </div></td>
+		<td colspan="5">
+		<input type="submit" class="button" value="保存" name="savedata">
+        </td>
+    </tr>
+</table>
+</form>
+</div>
+
+ 
+{include file="pagefooter.htm"}

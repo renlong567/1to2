@@ -1,0 +1,93 @@
+<!-- $Id: cus_jy_curr.html 14216 2008-03-10 02:27:21Z testyang $ -->
+{if $full_page}
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,listtable.js"}
+<div class="form-div">
+  <form action="javascript:searchCurr()" name="searchForm">
+    <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+    &nbsp;订单号:&nbsp;<input type="text" name="order_sn" size="20" />&nbsp;订单ID:&nbsp;<input type="text" name="order_id" size="20" />
+      <input type="submit" value="{$lang.button_search}" />
+  </form>
+</div>
+<form method="post" action="" name="listForm">
+<!-- start ads list -->
+<div class="list-div" id="listDiv">
+{/if}
+
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th style="width:60px;"><a href="javascript:listTable.sort('cusid'); ">ID</a>{$sort_cusid}</th>
+	<th style="width:50px;"><a href="javascript:listTable.sort('delivery_sn'); ">订单ID</a>{$sort_order_id}</th>
+    <th><a href="javascript:listTable.sort('order_sn'); ">订单号</a>{$sort_order_sn}</th>
+
+
+	  <th>订单</th>
+	  <th>支付</th>
+	  <th>运单</th>
+	  <th>需要报单</th>
+	  <th>完成</th>
+    <th>{$lang.handler}</th>
+  </tr>
+  <tr>
+  {foreach from=$custom_list item=custom}
+  <tr>
+    <td class="center">{$custom.cusid}</td>
+	<td>{$custom.order_id}</td>
+    <td>{$custom.order_sn}</td>
+	{if $custom.sendstatus eq 1}
+	<td><a href="custom_list.php?act=haiguanedit&cusid={$custom.cusid}">{if $custom.orderstatus eq 1}未审核{elseif $custom.orderstatus eq 2}未报{elseif $custom.orderstatus eq 3}已报{elseif $custom.orderstatus eq 4}错误{elseif $custom.orderstatus eq 5}成功{/if}</a></td>
+	<td>{if $custom.paymentstatus eq 1}未审核{elseif $custom.paymentstatus eq 2}未报{elseif $custom.paymentstatus eq 3}已报{elseif $custom.paymentstatus eq 4}错误{elseif $custom.paymentstatus eq 5}成功{/if}</td>
+	<td>{if $custom.shippingstatus eq 1}未审核{elseif $custom.shippingstatus eq 2}未报{elseif $custom.shippingstatus eq 3}已报{elseif $custom.shippingstatus eq 4}错误{elseif $custom.shippingstatus eq 5}成功{/if}</td>
+
+	<td>{if $custom.sendstatus eq 1}是{else}否{/if}</td>
+	<td>{if $custom.status eq 1}是{else}否{/if}</td>
+	{else}
+	<td colspan="5">该订单状态为不需要报关</td>
+	{/if}
+    <td align="center"><span>
+    <a href="custom_list.php?act=edit&cusid={$custom.cusid}" title="{$lang.edit}"><img src="images/icon_edit.gif" border="0" height="21" width="21" /></a>&nbsp;
+    <a href="javascript:;" onclick="listTable.remove({$custom.cusid}, '{$lang.drop_confirm}')" title="{$lang.remove}"><img src="images/icon_drop.gif" border="0" height="21" width="21" /></a></span></td>
+  </tr>
+  {foreachelse}
+    <tr><td class="no-records" colspan="9">{$lang.no_links}</td></tr>
+  {/foreach}
+  <tr>
+    <td align="right" nowrap="true" colspan="9">{include file="page.htm"}</td>
+  </tr>
+</table>
+
+
+{if $full_page}
+</div>
+<!-- end ad_position list -->
+</form>
+
+<script type="text/javascript" language="JavaScript">
+  listTable.recordCount = {$record_count};
+  listTable.pageCount = {$page_count};
+
+  {foreach from=$filter item=item key=key}
+  listTable.filter.{$key} = '{$item}';
+  {/foreach}
+  {literal}
+  onload = function()
+  {
+    // 开始检查订单
+    startCheckOrder();
+  }
+
+  {/literal}
+  function searchCurr()
+	{
+		listTable.filter['order_sn'] = Utils.trim(document.forms['searchForm'].elements['order_sn'].value);
+		listTable.filter['order_id'] = Utils.trim(document.forms['searchForm'].elements['order_id'].value);
+
+
+		listTable.filter['page'] = 1;
+		listTable.loadList();
+  }
+
+
+</script>
+{include file="pagefooter.htm"}
+{/if}

@@ -1,0 +1,268 @@
+<!-- $Id: link_info.htm 16752 2009-10-20 09:59:38Z wangleisvn $ -->
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+<script type="text/javascript" src="../js/calendar.php?lang={$cfg_lang}"></script>
+<link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
+<style>
+hr{
+	border: 0px solid #d7d7d7;
+	height:1px;
+	background: #c43926;
+	margin:10px 0px;
+}
+</style>
+<div class="list-div" style="margin-bottom: 5px">
+<form action="custom_list.php?act=haiguansave&cusid={$custom.cusid}" method="post" name="theForm" onsubmit="ajaxsubmit(this);return false;">
+<table width="100%" cellpadding="3" cellspacing="1">
+	  <tr>
+		<th colspan="6">
+			基本信息
+		</th>
+	  </tr>
+	  <tr>
+		<td width="13%"><div align="right"><strong>订单号:</strong></div></td>
+		<td width="20%">{$custom.order_sn}</td>
+		<td width="13%"><div align="right"><strong>状态:</strong></div></td>
+		<td width="20%">
+					{if $custom.orderstatus eq '1'}未审核{/if}
+					{if $custom.orderstatus eq '2'}未报{/if}
+					{if $custom.orderstatus eq '3'}已报{/if}
+					{if $custom.orderstatus eq '4'}错误{/if}
+					{if $custom.orderstatus eq '5'}成功{/if}	
+		</td>
+		<td width="13%"><div align="right"><strong>报送日期</strong></div></td>
+		<td>
+			{$custom.sendorderdate}
+		</td>
+	  </tr>
+	
+
+
+
+
+		<td width="13%"><div align="right"><strong>S账册号</strong></div></td>
+		<td width="20%"><input name="order[lmsno]" value="{$order.lmsno}"></td>
+		<td width="13%"><div align="right"><strong>关联H2010账册号</strong></div></td>
+		<td width="20%"><input name="order[manualno]" value="{$order.manualno}"></td>
+		<td width="13%"><div align="right"><strong>许可证号</strong></div></td>
+		<td width="20%"><input name="order[license_no]" value="{$order.license_no}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>申报方式</strong></div></td>
+		<td width="20%">
+		<select name="declaretype" id="declaretype">
+			<option value="1" {if $order.declaretype eq 1} selected {/if}>货物申报</option>
+			<option value="2" {if $order.declaretype eq 1} {else} selected {/if}>物品申报</option>
+		</select>
+		
+		
+		</td>
+		<td width="13%"><div align="right"><strong>电商代码</strong></div></td>
+		<td width="20%"><input name="order[cbecode]" value="{$order.cbecode}"></td>
+		<td width="13%"><div align="right"><strong>电商名称</strong></div></td>
+		<td width="20%"><input name="order[cbename]" value="{$order.cbename}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>电商平台代码</strong></div></td>
+		<td width="20%"><input name="order[ecpcode]" value="{$order.ecpcode}"></td>
+		<td width="13%"><div align="right"><strong>电商平台名称</strong></div></td>
+		<td width="20%"><input name="order[ecpname]" value="{$order.ecpname}"></td>
+		<td width="13%"><div align="right"><strong>收货人地址</strong></div></td>
+		<td width="20%"><input name="order[collectionuseraddress]" value="{$order.collectionuseraddress}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>收货人国家</strong></div></td>
+		<td width="20%"><input name="order[collectionusercountry]" value="{$order.collectionusercountry}"></td>
+		<td width="13%"><div align="right"><strong>收货人名称</strong></div></td>
+		<td width="20%"><input name="order[collectionusername]" value="{$order.collectionusername}"></td>
+		<td width="13%"><div align="right"><strong>收货人电话</strong></div></td>
+		<td width="20%"><input name="order[collectionusertelephone]" value="{$order.collectionusertelephone}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>订单实际销售价格</strong></div></td>
+		<td width="20%"><input name="order[goodsvalue]" value="{$order.goodsvalue}"></td>
+		<td width="13%"><div align="right"><strong>订单编号</strong></div></td>
+		<td width="20%"><input name="order[orderid]" value="{$order.orderid}"></td>
+		<td width="13%"><div align="right"><strong>订单总价 总费用</strong></div></td>
+		<td width="20%"><input name="order[ordersum]" value="{$order.ordersum}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>运费</strong></div></td>
+		<td width="20%"><input name="order[freight]" value="{$order.freight}"></td>
+		<td width="13%"><div align="right"><strong>其他费用</strong></div></td>
+		<td width="20%"><input name="order[otherfee]" value="{$order.otherfee}"></td>
+		<td width="13%"><div align="right"><strong>进口行邮费</strong></div></td>
+		<td width="20%"><input name="order[taxfee]" value="{$order.taxfee}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>备注</strong></div></td>
+		<td width="20%"><input name="order[remark]" value="{$order.remark}"></td>
+		<td width="13%"><div align="right"><strong>发货人所在国</strong></div></td>
+		<td width="20%"><input name="order[senderusercountry]" value="{$order.senderusercountry}"></td>
+		<td width="13%"><div align="right"><strong>发货人的名称</strong></div></td>
+		<td width="20%"><input name="order[senderusername]" value="{$order.senderusername}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>发货人的地址</strong></div></td>
+		<td width="20%"><input name="order[senderuseraddress]" value="{$order.senderuseraddress}"></td>
+		<td width="13%"><div align="right"><strong>发货人电话</strong></div></td>
+		<td width="20%"><input name="order[senderusertelephone]" value="{$order.senderusertelephone}"></td>
+		<td width="13%"><div align="right"><strong>证件类型</strong></div></td>
+		<td width="20%"><input name="order[idtype]" value="{$order.idtype}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>证件号码</strong></div></td>
+		<td width="20%"><input name="order[customerid]" value="{$order.customerid}"></td>
+		<td width="13%"><div align="right"><strong>进出口标志</strong></div></td>
+		<td width="20%">
+				<select name="order[ietype]" id="ietype">
+					<option value="I" {if $order.ietype eq 'I'} selected {/if}>进口</option>
+				</select>
+		</td>
+		<td width="13%"></td>
+		<td width="20%"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>模式代码:</strong></div></td>
+		<td width="20%">
+				<select name="order[billmode]" id="billmode">
+					<option value="2" {if $order.billmode eq '2'} selected {/if}>保税模式</option>
+				</select>
+		
+		</td>
+		<td width="13%"><div align="right"><strong>是否有废旧物品</strong></div></td>
+		<td width="20%">
+			<select name="order[wasterornot]" id="wasterornot">
+				<option value="N" {if $order.wasterornot eq 'N'} selected {/if}>无</option>
+				<option value="Y" {if $order.wasterornot eq 'Y'} selected {/if}>有</option>
+			</select>
+		
+		</td>
+		<td width="13%"><div align="right"><strong>是否带有植物性包装及铺垫材料</strong></div></td>
+		<td width="20%">
+			<select name="order[botanyornot]" id="botanyornot">
+				<option value="N" {if $order.botanyornot eq 'N'} selected {/if}>无</option>
+				<option value="Y" {if $order.wasterornot eq 'Y'} selected {/if}>有</option>
+			</select>	
+		
+		</td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>缴税单位</strong></div></td>
+		<td width="20%"><input name="order[taxedenterprise]" value="{$order.taxedenterprise}"></td>
+		<td width="13%"><div align="right"><strong>电商检验检疫备案编号</strong></div></td>
+		<td width="20%"><input name="order[cbecodeinsp]" value="{$order.cbecodeinsp}"></td>
+		<td width="13%"><div align="right"><strong>电商平台检验检疫备案编号</strong></div></td>
+		<td width="20%"><input name="order[ecpcodeinsp]" value="{$order.ecpcodeinsp}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>物流企业检验检疫备案编号</strong></div></td>
+		<td width="20%"><input name="order[trepcodeinsp]" value="{$order.trepcodeinsp}"></td>
+		<td width="13%"><div align="right"><strong>订单提交时间</strong></div></td>
+		<td width="20%"><input name="order[submittime]" value="{$order.submittime}"></td>
+		<td width="13%"><div align="right"><strong>贸易国别（代码）</strong></div></td>
+		<td width="20%"><input name="order[tradecompany]" value="{$order.tradecompany}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>总费用币制</strong></div></td>
+		<td width="20%"><input name="order[totalfeeunit]" value="{$order.totalfeeunit}"></td>
+		<td width="13%"><div align="right"><strong>商品种类数</strong></div></td>
+		<td width="20%"><input name="order[countofgoodstype]" value="{$order.countofgoodstype}" type="hidden">{$order.countofgoodstype}</td>
+		<td width="13%"><div align="right"><strong>毛重</strong></div></td>
+		<td width="20%"><input name="order[weight]" value="{$order.weight}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>毛重单位</strong></div></td>
+		<td width="20%"><input name="order[weightunit]" value="{$order.weightunit}"></td>
+		<td width="13%"><div align="right"><strong>净重</strong></div></td>
+		<td width="20%"><input name="order[netweight]" value="{$order.netweight}"></td>
+		<td width="13%"><div align="right"><strong>净重单位</strong></div></td>
+		<td width="20%"><input name="order[netweightunit]" value="{$order.netweightunit}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>平台网址</strong></div></td>
+		<td width="20%"><input name="order[platformurl]" value="{$order.platformurl}"></td>
+		<td width="13%"><div align="right"><strong>发货人所在国（检验检疫代码） </strong></div></td>
+		<td width="20%"><input name="order[collusercountryinsp]" value="{$order.collusercountryinsp}"></td>
+		<td width="13%"><div align="right"><strong>收货人所在国（检验检疫代码） </strong></div></td>
+		<td width="20%"><input name="order[sendusercountryinsp]" value="{$order.sendusercountryinsp}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>支付交易号</strong></div></td>
+		<td width="20%"><input name="order[paynumber]" value="{$order.paynumber}"></td>
+		<td width="13%"><div align="right"><strong>支付企业代码</strong></div></td>
+		<td width="20%"><input name="order[payenterprisecode]" value="{$order.payenterprisecode}"></td>
+		<td width="13%"><div align="right"><strong>支付企业名称</strong></div></td>
+		<td width="20%"><input name="order[payenterprisename]" value="{$order.payenterprisename}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>其他支付金额</strong></div></td>
+		<td width="20%"><input name="order[otherpayment]" value="{$order.otherpayment}"></td>
+		<td width="13%"><div align="right"><strong>其他支付备注</strong></div></td>
+		<td width="20%"><input name="order[otherpaymenttype]" value="{$order.otherpaymenttype}"></td>
+		<td width="13%"><div align="right"><strong>报关企业海关备案编号</strong></div></td>
+		<td width="20%"><input name="order[declcode]" value="{$order.declcode}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>报关企业名称</strong></div></td>
+		<td width="20%"><input name="order[declname]" value="{$order.declname}"></td>
+		<td width="13%"><div align="right"><strong>保金保函类型</strong></div></td>
+		<td width="20%"><input name="order[depositorguarantee]" value="{$order.depositorguarantee}"></td>
+		<td width="13%"><div align="right"><strong>保函编号</strong></div></td>
+		<td width="20%"><input name="order[guaranteeno]" value="{$order.guaranteeno}"></td>
+	</tr>
+	<tr>
+		<td width="13%"><div align="right"><strong>预留字段1</strong></div></td>
+		<td width="20%"><input name="order[extendfield1]" value="{$order.extendfield1}"></td>
+		<td width="13%"><div align="right"><strong>预留字段2</strong></div></td>
+		<td width="20%"><input name="order[extendfield2]" value="{$order.extendfield2}"></td>
+		<td width="13%"><div align="right"><strong>预留字段3</strong></div></td>
+		<td width="20%"><input name="order[extendfield3]" value="{$order.extendfield3}"></td>
+	</tr>
+	
+
+
+	<tr>
+		 <td>
+		  <div align="right"><strong>当前可执行操作：</strong> </div></td>
+		<td colspan="5">
+		<input type="submit" class="button" value="保存" name="savedata">
+        </td>
+    </tr>
+ </table>
+ </form>
+</div>
+<script language="JavaScript">
+	function ajaxsubmit(obj){
+	  var text_alt='';
+	  var elems = obj.getElementsByTagName("INPUT");
+
+	  for (var i=0; i < elems.length; i++)
+	  {
+			if(text_alt){
+				text_alt=text_alt+"&"+elems[i].name+"="+elems[i].value;
+			}else{
+				text_alt=elems[i].name+"="+elems[i].value;
+			}
+	  }
+	  var selectelems = obj.getElementsByTagName("SELECT");
+	  for (var i=0; i < selectelems.length; i++)
+	  {
+			if(text_alt){
+				text_alt=text_alt+"&"+selectelems[i].name+"="+selectelems[i].value;
+			}else{
+				text_alt=selectelems[i].name+"="+selectelems[i].value;
+			}
+	  }
+	  res = Ajax.call('custom_list.php?act=haiguansavecheck&cusid={$custom.cusid}', text_alt, null, "POST", "JSON", false);
+	  if(!res.status){
+		    alert(res.message);
+			return false;
+	  }else{
+			return true;
+	  }
+	}
+
+
+</script>
+{include file="pagefooter.htm"}

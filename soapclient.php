@@ -1,0 +1,66 @@
+
+<?php
+$xml='<?xml version="1.0" encoding="UTF-8"?>
+<CBECMESSAGE>
+	<MESSAGEHEAD>
+		<MESSAGEID>SENDERID7788991100</MESSAGEID>
+		<MESSAGETYPE>IEPT201</MESSAGETYPE>
+		<SENDERID>SENDERID</SENDERID>
+		<RECEIVERID>RECEIVERID</RECEIVERID>
+		<SENDTIME>2015-03-0612:12:12</SENDTIME>
+		<SEQNO>7788991100</SEQNO>
+		<BILLMODE></BILLMODE>
+	</MESSAGEHEAD>
+	<MESSAGEBODY>
+		<BODYMASTER>
+			<SEQNO>7788991100</SEQNO>
+			<GUID>112233</GUID>
+			<MANAGERCUSTOMSCODE></MANAGERCUSTOMSCODE>
+			<PAYTIME>2015-05-26 17:54:30</PAYTIME>
+			<ORDERID>7788991100</ORDERID>
+			<PAYENTERPRISECODE>P461200031</PAYENTERPRISECODE>
+			<PAYENTERPRISENAME>腾达通讯</PAYENTERPRISENAME>
+			<PAYNUMBER>7788991100 </PAYNUMBER>
+			<ECPCODE>W461200040</ECPCODE>
+			<ECPNAME>腾达通讯</ECPNAME>
+			<PAYMENTTYPE>A</PAYMENTTYPE>
+			<MONETARYTYPE>USD</MONETARYTYPE>
+			<FEE>58.02</FEE>
+			<CUSTOMERFLAG>1</CUSTOMERFLAG>
+			<IDTYPE>1</IDTYPE>
+			<CUSTOMERID>452502198005083135</CUSTOMERID>
+			<IETYPE>I</IETYPE>
+			<REMARK>备注</REMARK>
+			<PAYUSER>谢伟</PAYUSER>
+			<PAYECODE>4100102324</PAYECODE>
+			<CBECODEINSP>4100102324</CBECODEINSP>
+			<COININSP>USD</COININSP>
+			<CBECODE>D461200044</CBECODE>
+			<CBENAME>腾达通讯</CBENAME>
+		</BODYMASTER>
+	</MESSAGEBODY>
+</CBECMESSAGE>';
+try {
+
+$ws = "http://www.haeport.com:8081/com.ygjt.csp.api.WSRecvService?wsdl";//webservice服务的地址
+$client = new SoapClient($ws);
+
+
+
+
+  var_dump($client->__getFunctions());
+
+  print("<br/>");
+
+  var_dump($client->__getTypes());
+
+  print("<br/>");
+$param = array("arg0"=>$xml);
+$result = $client->__soapCall('receive',array('paramters'=>$param));
+
+
+print_r($result);
+} catch (SOAPFault $e) {
+    print_r('Exception:'.$e);
+}
+?>

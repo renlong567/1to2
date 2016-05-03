@@ -1,0 +1,73 @@
+<!-- $Id: link_info.htm 16752 2009-10-20 09:59:38Z wangleisvn $ -->
+{include file="pageheader.htm"}
+<div class="main-div">
+<form action="cus_jy_country.php" method="post" name="theForm" enctype="multipart/form-data" onsubmit="return validate()">
+<table width="100%" id="general-table">
+  <tr>
+    <td class="label">国家代码</td>
+    <td>
+      <input type="text" name="x_code" value="{$country.x_code}" size="30"  />
+      
+    </td>
+  </tr>
+
+  <tr>
+    <td class="label">中文名称</td>
+    <td>
+      <input type="text" name="x_cname" value="{$country.x_cname}" size="30"  />
+      
+    </td>
+  </tr>
+  <tr>
+    <td class="label">英文名称</td>
+    <td>
+      <input type="text" name="x_ename" value="{$country.x_ename}" size="30"  />
+    </td>
+  </tr>
+      <tr>
+        <td class="label">是否默认：</td>
+        <td>
+          <input type="radio" name="def" value="0"
+          {if $country.def eq 0} checked="true"{/if}/>否
+          <input type="radio" name="def" value="1"
+          {if $country.def eq 1} checked="true" {/if}/>是
+        </td>
+      </tr>
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td>
+      <input type="submit" value="{$lang.button_submit}" class="button" />
+      <input type="reset" value="{$lang.button_reset}" class="button" />
+      <input type="hidden" name="act" value="{$form_act}" />
+      <input type="hidden" name="id" value="{$country.id}" />
+    </td>
+  </tr>
+</table>
+</form>
+</div>
+{insert_scripts files="../js/utils.js,validator.js"}
+<script language="JavaScript">
+<!--
+
+{literal}
+/**
+ * 检查表单输入的数据
+ */
+function validate()
+{
+    validator = new Validator("theForm");
+    validator.required("x_code",      "国家代码不能为空");
+    validator.required("x_cname",     "中文名不能为空");
+	validator.required("x_ename",     "英文名不能为空");
+    return validator.passed();
+}
+
+onload = function()
+{
+    // 开始检查订单
+    startCheckOrder();
+}
+{/literal}
+//-->
+</script>
+{include file="pagefooter.htm"}
