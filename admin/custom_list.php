@@ -3,7 +3,11 @@ define('IN_ECS', true);
 require(dirname(__FILE__) . '/includes/init.php');
 require(dirname(__FILE__) . '/includes/lib_cus.php');
 require_once(ROOT_PATH . '/includes/lib_customs.php');
+
 admin_priv('cus_01_list');
+
+$exc_airport_order = new exchange($ecs->table('airport_order'), $db, 'id', '');
+
 if (empty($_REQUEST['act']))
 {
     $_REQUEST['act'] = 'list';
@@ -205,6 +209,11 @@ if ($_REQUEST['act'] == 'list')
     $link[0]['href'] = 'custom_list.php';
     sys_msg('同步完成',0, $link);
 }
+/**
+ * @desc 推送报文
+ * @author RenLong
+ * @date 2016-05-04
+ */
 elseif ($_REQUEST['act'] == 'customsAction')
 {
     if (empty($_POST['order']))
@@ -215,17 +224,19 @@ elseif ($_REQUEST['act'] == 'customsAction')
     //操作类型,1新增，2修改，3删除
     $modifyMark = intval($_POST['modifyMark']);
     //进出境日期
-    $jcbOrderTime = empty($_POST['jcbOrderTime']) ? '2015-12-14' : trim($_POST['jcbOrderTime']);
+    $jcbOrderTime = empty($_POST['jcbOrderTime']) ? local_date('Y-m-d',$_SERVER['REQUEST_TIME']) : trim($_POST['jcbOrderTime']);
     //目标口岸
     $target = empty($_POST['target']) ? 'airport' : trim($_POST['target']);
-
+    //通关方式
+    $billmode = intval($_POST['billmode']);
+    
     //订单接口
     if ($_POST['operate'] == 'o2')
     {
         require_once ROOT_PATH . 'includes/modules/customs/airportOrder.php';
         $time = local_date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
         $num = 1;
-        $airportOrder = new airportOrder();
+        $airportOrder = new airportOrder($_CFG);
         foreach ($_POST['order'] as $v)
         {
             ++$num;
@@ -235,22 +246,21 @@ elseif ($_REQUEST['act'] == 'customsAction')
             switch ($order['st_stock_flag'])
             {
                 case CUSTOMS_MODE_JIHUO:
-                    $airportOrder->SENDERUSERCOUNTRY = JIHUO_SEND_COUNTRY_CODE_CUS;
-                    $airportOrder->SENDERUSERNAME = JIHUO_SEND_NAME;
-                    $airportOrder->SENDERUSERADDRESS = JIHUO_SEND_ADDRESS;
-                    $airportOrder->SENDERUSERTELEPHONE = JIHUO_SEND_MOBILE;
-                    $airportOrder->TRADECOMPANY = JIHUO_TRADING_COUNTRY_CODE_CIQ;
-                    $airportOrder->COLLUSERCOUNTRYINSP = JIHUO_SEND_COUNTRY_CODE_CIQ;
-                    $airportOrder->IDTYPE = JIHUO_IDC_TYPE;
+//                    $airportOrder->SENDERUSERCOUNTRY = JIHUO_SEND_COUNTRY_CODE_CUS;
+//                    $airportOrder->SENDERUSERNAME = JIHUO_SEND_NAME;
+//                    $airportOrder->SENDERUSERADDRESS = JIHUO_SEND_ADDRESS;
+//                    $airportOrder->SENDERUSERTELEPHONE = JIHUO_SEND_MOBILE;
+//                    $airportOrder->TRADECOMPANY = JIHUO_TRADING_COUNTRY_CODE_CIQ;
+//                    $airportOrder->COLLUSERCOUNTRYINSP = JIHUO_SEND_COUNTRY_CODE_CIQ;
                     break;
+                default:
                 case CUSTOMS_MODE_BEIHUO:
-                    $airportOrder->SENDERUSERCOUNTRY = BEIHUO_SEND_COUNTRY_CODE_CUS;
-                    $airportOrder->SENDERUSERNAME = BEIHUO_SEND_NAME;
-                    $airportOrder->SENDERUSERADDRESS = BEIHUO_SEND_ADDRESS;
-                    $airportOrder->SENDERUSERTELEPHONE = BEIHUO_SEND_MOBILE;
-                    $airportOrder->TRADECOMPANY = BEIHUO_TRADING_COUNTRY_CODE_CIQ;
-                    $airportOrder->COLLUSERCOUNTRYINSP = BEIHUO_SEND_COUNTRY_CODE_CIQ;
-                    $airportOrder->IDTYPE = BEIHUO_IDC_TYPE;
+//                    $airportOrder->SENDERUSERCOUNTRY = BEIHUO_SEND_COUNTRY_CODE_CUS;
+//                    $airportOrder->SENDERUSERNAME = BEIHUO_SEND_NAME;
+//                    $airportOrder->SENDERUSERADDRESS = BEIHUO_SEND_ADDRESS;
+//                    $airportOrder->SENDERUSERTELEPHONE = BEIHUO_SEND_MOBILE;
+//                    $airportOrder->TRADECOMPANY = BEIHUO_TRADING_COUNTRY_CODE_CIQ;
+//                    $airportOrder->COLLUSERCOUNTRYINSP = BEIHUO_SEND_COUNTRY_CODE_CIQ;
                     break;
             }
 
@@ -265,13 +275,14 @@ elseif ($_REQUEST['act'] == 'customsAction')
             $airportOrder->PURCHASERNAME = $airportOrder->COLLECTIONUSERNAME;
             $airportOrder->BUYER_REG_NO = $airportOrder->COLLECTIONUSERTELEPHONE;
             $airportOrder->PURCHASERTELEPHONE = $airportOrder->COLLECTIONUSERTELEPHONE;
+            $airportOrder->IDTYPE = $order['idtype'];
             $airportOrder->GOODSVALUE = $order['goods_amount'];
             $airportOrder->ORDERID = $order['order_sn'];
             $airportOrder->ORDERSUM = $order['order_amount'];
             $airportOrder->SUBMITTIME = $order['order_addtime'];
             $airportOrder->WEIGHT = $order['weight'];
             $airportOrder->COUNTOFGOODSTYPE = $order['COUNTOFGOODSTYPE'];
-            $airportOrder->BILLMODE = $order['st_stock_flag'];
+            $airportOrder->BILLMODE = $billmode;
             $airportOrder->OTHERPAYMENT = $order['other'];
             $airportOrder->MODIFYMARK = $modifyMark;
             $airportOrder->send();
@@ -339,6 +350,37 @@ elseif ($_REQUEST['act'] == 'customsAction')
         messageGoBackJS('删除成功');
     }
 }
+/**
+ * @desc 删除订单报文
+ * @author RenLong
+ * @date 2016-05-04
+ */
+elseif ($_REQUEST['act'] == 'remove')
+{
+    $id = intval($_GET['id']);
+    $airport_info = get_airport_info($id);
+    if (empty($airport_info))
+    {
+        make_json_error('订单记录不存在');
+    }
+    $order_sn = $airport_info['order_sn'];
+
+    if ($exc_airport_order->drop($id))
+    {
+        /* 记日志 */
+        admin_log($order_sn, 'remove', 'airport_order');
+        /* 清除缓存 */
+        clear_cache_files();
+        $url = basename(__FILE__) . '?act=query&' . str_replace('act=remove', '', $_SERVER['QUERY_STRING']);
+        ecs_header("Location: $url\n");
+        exit();
+    }
+    else
+    {
+        make_json_result('删除失败');
+    }
+}
+
 
 function haiguancheck($value){
         $errmsg=array();

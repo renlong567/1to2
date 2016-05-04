@@ -88,4 +88,5 @@ $_LANG['log_action']['exchange_goods'] = '积分可兑换的商品';
 $_LANG['log_action']['suppliers'] = '供货商管理';
 
 $_LANG['log_action']['reg_fields'] = '会员注册项';
+$_LANG['log_action']['airport_order'] = '综保区订单报文';    //RenLong 2016-05-04
 ?>

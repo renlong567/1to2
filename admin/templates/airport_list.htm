@@ -58,7 +58,7 @@
                 <td align="center">{$n.paymentNo}</td>
                 <td align="center">{$n.order_status}</td>
                 <td align="center">{$n.order_comments}</td>
-                <td align="center"><a href="../data/customs/airport/send/order/{$n.order_sn}.xml">{$n.order_sn}报文</a></td>
+                <td align="center"><a href="../data/customs/airport/send/order/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
                 <td align="center">{$n.pay_number_status}</td>
                 <td align="center">{$n.pay_comments}</td>
                 <td align="center"><a href="../data/customs/airport/{$n.order_sn}_pay.xml">支付报文</a></td>
@@ -92,6 +92,10 @@
         <select name="modifyMark">
             <option value="1">新增</option>
             <option value="2">修改</option>
+        </select>
+        <select name="billmode">
+            <option value="1">一般模式(集货)</option>
+            <option value="2">保税模式(备货)</option>
         </select>
         进/出境日期：<input name="jcbOrderTime" type="text" id="jcbOrderTime" size="20" placeholder="进/出境日期" value="" />
         <input name="selbtn2" type="button" id="selbtn2" onclick="return showCalendar('jcbOrderTime', '%Y-%m-%d', false, false, 'selbtn2');" value="{$lang.btn_select}" class="button" />&nbsp;&nbsp;&nbsp;
@@ -144,7 +148,6 @@
     function searchCustoms() {
     listTable.filter['orderNo'] = Utils.trim(document.forms['searchForm'].elements['orderNo'].value);
             listTable.filter['consignee'] = Utils.trim(document.forms['searchForm'].elements['consignee'].value);
-            listTable.filter['batchNumbers'] = Utils.trim(document.forms['searchForm'].elements['batchNumbers'].value);
             listTable.filter['logisticsNo'] = Utils.trim(document.forms['searchForm'].elements['logisticsNo'].value);
             listTable.filter['customsType'] = document.forms['searchForm'].elements['customsType'].value;
             listTable.filter['customs_status'] = document.forms['searchForm'].elements['customs_status'].value;

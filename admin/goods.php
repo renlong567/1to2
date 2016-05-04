@@ -841,14 +841,14 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                     "promote_start_date, promote_end_date, goods_img, goods_thumb, original_img, keywords, goods_brief, " .
                     "seller_note, goods_weight, goods_number, warn_number, integral, give_integral, is_best, is_new, is_hot, " .
                     "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, rank_integral, suppliers_id,itemno, describel, goodname, specifications, barcode, taxid, sourceproducercountry, coin, unit, goodidinsp, goodnameenglish, weight, weightunit, gno, srccountryinsp, unitinsp, coininsp,"
-                    . 'goods_netweight,unit_id,origin_id)' .  //RenLong 2016-05-04
+                    . 'goods_netweight)' .  //RenLong 2016-05-04
                 "VALUES ('$_POST[goods_name]', '$goods_name_style', '$goods_sn', '$catgory_id', " .
                     "'$brand_id', '$shop_price', '$market_price', '$is_promote','$promote_price', ".
                     "'$promote_start_date', '$promote_end_date', '$goods_img', '$goods_thumb', '$original_img', ".
                     "'$_POST[keywords]', '$_POST[goods_brief]', '$_POST[seller_note]', '$goods_weight', '$goods_number',".
                     " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', '$is_on_sale', '$is_alone_sale', $is_shipping, ".
                     " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$rank_integral', '$suppliers_id','$_POST[itemno]','$_POST[describel]','$_POST[goodname]','$_POST[specifications]','$_POST[barcode]','$_POST[taxid]','$_POST[sourceproducercountry]','$_POST[coin]','$_POST[unit]','$_POST[goodidinsp]','$_POST[goodnameenglish]','$_POST[weight]','$_POST[weightunit]','$_POST[gno]','$_POST[srccountryinsp]','$_POST[unitinsp]','$_POST[coininsp]',"
-                    . "$goods_netweight,$unit_id,$origin_id)";  //RenLong 2016-05-04
+                    . "$goods_netweight)";  //RenLong 2016-05-04
         }
         else
         {
@@ -857,14 +857,14 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                     "promote_start_date, promote_end_date, goods_img, goods_thumb, original_img, keywords, goods_brief, " .
                     "seller_note, goods_weight, goods_number, warn_number, integral, give_integral, is_best, is_new, is_hot, is_real, " .
                     "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, extension_code, rank_integral,itemno, describel, goodname, specifications, barcode, taxid, sourceproducercountry, coin, unit, goodidinsp, goodnameenglish, weight, weightunit, gno, srccountryinsp, unitinsp, coininsp,"
-                    . 'goods_netweight,unit_id,origin_id)' .  //RenLong 2016-05-04
+                    . 'goods_netweight)' .  //RenLong 2016-05-04
                 "VALUES ('$_POST[goods_name]', '$goods_name_style', '$goods_sn', '$catgory_id', " .
                     "'$brand_id', '$shop_price', '$market_price', '$is_promote','$promote_price', ".
                     "'$promote_start_date', '$promote_end_date', '$goods_img', '$goods_thumb', '$original_img', ".
                     "'$_POST[keywords]', '$_POST[goods_brief]', '$_POST[seller_note]', '$goods_weight', '$goods_number',".
                     " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', 0, '$is_on_sale', '$is_alone_sale', $is_shipping, ".
                     " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$code', '$rank_integral','$_POST[itemno]','$_POST[describel]','$_POST[goodname]','$_POST[specifications]','$_POST[barcode]','$_POST[taxid]','$_POST[sourceproducercountry]','$_POST[coin]','$_POST[unit]','$_POST[goodidinsp]','$_POST[goodnameenglish]','$_POST[weight]','$_POST[weightunit]','$_POST[gno]','$_POST[srccountryinsp]','$_POST[unitinsp]','$_POST[coininsp]',"
-                    . "$goods_netweight,$unit_id,$origin_id)";  //RenLong 2016-05-04
+                    . "$goods_netweight)";  //RenLong 2016-05-04
         }
     }
     else
@@ -898,9 +898,7 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                 "promote_start_date = '$promote_start_date', " .
                 "suppliers_id = '$suppliers_id', " .
                 "promote_end_date = '$promote_end_date',".
-                "goods_netweight = '$goods_netweight',".  //RenLong 2016-05-04
-                "unit_id = '$unit_id',".  //RenLong 2016-05-04
-                "origin_id = '$origin_id',";  //RenLong 2016-05-04
+                "goods_netweight = '$goods_netweight',";  //RenLong 2016-05-04
 
         /* 如果有上传图片，需要更新数据库 */
         if ($goods_img)
@@ -944,7 +942,6 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
 				"unit = '$_POST[unit]' ," .
 				"goodidinsp = '$_POST[goodidinsp]', " .
 				"goodnameenglish = '$_POST[goodnameenglish]' ," .
-				"weight = '$_POST[weight]' ," .
 				"weightunit = '$_POST[weightunit]' ," .
 				"gno = '$_POST[gno]' ," .
 				"srccountryinsp = '$_POST[srccountryinsp]' ," .

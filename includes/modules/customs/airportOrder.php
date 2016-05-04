@@ -55,9 +55,9 @@ class airportOrder extends customsCore
     public $TOTALFEEUNIT = '';
     public $COUNTOFGOODSTYPE = '';
     public $WEIGHT = 0;
-    public $WEIGHTUNIT = '';
+    public $WEIGHTUNIT = '035';
     public $NETWEIGHT = 0;
-    public $NETWEIGHTUNIT = '';
+    public $NETWEIGHTUNIT = '035';
     public $PLATFORMURL = '';
     public $COLLUSERCOUNTRYINSP = '';
     public $SENDUSERCOUNTRYINSP = '';
@@ -80,7 +80,7 @@ class airportOrder extends customsCore
     public $EXTENDFIELD4 = '';
     public $EXTENDFIELD5 = '';
 
-    public function __construct()
+    public function __construct($_CFG)
     {
         $this->CBECODE = $_CFG['cus_cbecode'];
         $this->CBENAME = $_CFG['cus_cbename'];
@@ -106,8 +106,8 @@ class airportOrder extends customsCore
         $this->DECLNAME = $_CFG['cus_declname'];
         $this->DEPOSITORGUARANTEE = $_CFG['cus_depositorguarantee'];
         $this->GUARANTEENO = $_CFG['cus_guaranteeno'];
-//        $this->Url = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs?wsdl';   //测试
-//        $this->location = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs';   //测试
+        $this->Url = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs?wsdl';   //测试
+        $this->location = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs';   //测试
     }
 
     public function send()
@@ -116,32 +116,32 @@ class airportOrder extends customsCore
 
         $this->createXml($this->ORDERID, $message);
 
-//        $data = array('xmlStr' => $message);
+        $data = array('xmlStr' => $message);
 //        header('Content-type:text/xml');
 //        print_r($message);
 //        exit;
-//        return $this->sendToServer($data, 'payParse');
+        return $this->sendToServer($data, 'payParse');
     }
 
     private function getCode()
     {
         $goods = $this->getGoodsByOrderId();
 
-//        if (true)
-//        {
-//            $this->PAYENTERPRISECODE = 'P461263355';
-//            $this->PAYENTERPRISENAME = '美华有限公司';
-//            $this->ECPCODE = $this->TAXEDENTERPRISE = 'W461287621';
-//            $this->ECPNAME = '美华有限公司';
-//            $this->CBECODE = 'D461241432';
-//            $this->CBENAME = '美华有限公司';
-//            $this->CBECODEINSP = '5122343433';
-//            $this->ECPCODEINSP = '5122343433';
-//            $this->ITEMNO = 'D461241432LLQY001997';
-//            $this->LMSNO = 'S4612I696715';
-//            $this->DECLCODE = '6546646456';
-//            $this->DECLNAME = '美华报关';
-//        }
+        if (true)
+        {
+            $this->PAYENTERPRISECODE = 'P461263355';
+            $this->PAYENTERPRISENAME = '美华有限公司';
+            $this->ECPCODE = $this->TAXEDENTERPRISE = 'W461287621';
+            $this->ECPNAME = '美华有限公司';
+            $this->CBECODE = 'D461241432';
+            $this->CBENAME = '美华有限公司';
+            $this->CBECODEINSP = '5122343433';
+            $this->ECPCODEINSP = '5122343433';
+            $this->ITEMNO = 'D461241432LLQY001997';
+            $this->LMSNO = 'S4612I696715';
+            $this->DECLCODE = '6546646456';
+            $this->DECLNAME = '美华报关';
+        }
 
         $MESSAGEHEAD = <<<ETO
             <MESSAGEID>e2e175ce-6534-4b1a-b350-29fc79fe1249</MESSAGEID>

@@ -238,7 +238,11 @@ define('LICENSE_VERSION', '1.0');
 /* 配送方式 */
 define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|presswork|sf_express|sto_express|yto|zto');
 
-/* RenLong 2016-05-04 报关状态 */
+/* 通关方式 RenLong 2016-05-04 */
+define('CUSTOMS_MODE_JIHUO', 1);    //一般模式（集货）
+define('CUSTOMS_MODE_BEIHUO', 2);    //保税模式（备货）
+
+/* 报关状态 RenLong 2016-05-04 */
 define('AIRPORT_CUSTOMS_FAIL', 0); //失败
 define('AIRPORT_CUSTOMS_OK', 1); //成功
 define('AIRPORT_CUSTOMS_NORMAL', 99); //未申报

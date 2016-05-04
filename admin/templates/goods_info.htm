@@ -268,16 +268,8 @@
             <td><input type="text" name="goodnameenglish" value="{$goods.goodnameenglish}" size="50" /></td>
           </tr>
           <tr>
-            <td class="label">毛重</td>
-            <td><input type="text" name="weight" value="{$goods.weight}" size="50" /></td>
-          </tr>
-          <tr>
             <td class="label">重量单位代码</td>
             <td><input type="text" name="weightunit" value="{$goods.weightunit}" size="50" /></td>
-          </tr>
-          <tr>
-            <td class="label">原产国（海关代码） </td>
-            <td><input type="text" name="sourceproducercountry" value="{$goods.sourceproducercountry}" size="10" /></td>
           </tr>
           <tr>
             <td class="label">商品描述</td>
@@ -305,14 +297,6 @@
           <td><input type="text" name="goods_netweight" value="{$goods.goods_netweight_by_unit}" size="20" /> <select name="weight_netunit">{html_options options=$unit_list selected=$netweight_unit}</select><span class="require-field">*</span></td>
         </tr>
         {/if}
-        <tr>
-          <td class="label">商品规格</td>
-          <td><select name="unit_id"><option value="">请选择</option>{foreach from=$unit_info item=val}<option {if $goods.unit_id eq $val.id}selected="selected"{/if} value="{$val.id}" >{$val.unit_name}</option>{/foreach}</select><span class="require-field">*</span></td></td>
-        </tr>
-        <tr>
-          <td class="label">原产国</td>
-          <td><select name="origin_id"><option value="">请选择</option>{foreach from=$origin_country item=val}<option {if $goods.origin_id eq $val.id}selected="selected"{/if} value="{$val.id}" >{$val.x_cname}</option>{/foreach}</select><span class="require-field">*</span></td>
-        </tr>
           {if $cfg.use_storage}
           <tr>
             <td class="label"><a href="javascript:showNotice('noticeStorage');" title="{$lang.form_notice}"><img src="images/notice.gif" width="16" height="16" border="0" alt="{$lang.form_notice}"></a> {$lang.lab_goods_number}</td>
@@ -570,8 +554,6 @@
         var goods_sn  = document.forms['theForm'].elements['goods_sn'].value;
 
         validator.required('goods_name', goods_name_not_null);
-        validator.required('origin_id', '请选择原产国。');//WangMin 2015-08-06
-        validator.required('unit_id', '请选择规格。');//WangMin 2015-08-06
         validator.required('goods_weight', '商品毛重不能为空。');//WangMin 2015-08-06
         validator.required('goods_netweight', '商品净重不能为空。');//WangMin 2015-08-06
 
