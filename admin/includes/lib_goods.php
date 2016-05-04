@@ -41,7 +41,7 @@ function get_unit_list()
 {
     return array(
         '1'     => $GLOBALS['_LANG']['unit_kg'],
-        '0.001' => $GLOBALS['_LANG']['unit_g'],
+//        '0.001' => $GLOBALS['_LANG']['unit_g'],
     );
 }
 

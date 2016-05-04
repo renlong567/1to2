@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @desc进出口订单信息类属性定义
- * @author WangMin
- * @date 2015-06-23
+ * @desc 进出口订单信息类属性定义
+ * @author RenLong
+ * @date 2016-05-04
  */
 if (!defined('IN_ECS'))
 {
@@ -17,10 +17,10 @@ class airportOrder extends customsCore
 
     public $orderId = 0;
     public $ITEMNO = '';
-    public $CBECODE = COMPANY_CUSTOMS_NUMBER;
-    public $CBENAME = COMPANY_NAME;
-    public $ECPCODE = COMPANY_CUSTOMS_NUMBER;
-    public $ECPNAME = COMPANY_NAME;
+    public $CBECODE = '';
+    public $CBENAME = '';
+    public $ECPCODE = '';
+    public $ECPNAME = '';
     public $PURCHASERNAME = ''; //订购人名称
     public $BUYER_REG_NO = '';  //订购人注册号
     public $PURCHASERTELEPHONE = '';   //订购人电话
@@ -46,21 +46,21 @@ class airportOrder extends customsCore
     public $BILLMODE = '';   //模式代码 1： 一般模式(集货) 2： 保税模式(备货)
     public $WASTERORNOT = 'N';
     public $BOTANYORNOT = 'N';
-    public $TAXEDENTERPRISE = COMPANY_CUSTOMS_NUMBER;
-    public $CBECODEINSP = CBE_CODE_INSP;
-    public $ECPCODEINSP = ECP_CODE_INSP;
-    public $TREPCODEINSP = TREP_CODE_INSP;
+    public $TAXEDENTERPRISE = '';
+    public $CBECODEINSP = '';
+    public $ECPCODEINSP = '';
+    public $TREPCODEINSP = '';
     public $SUBMITTIME = '';
     public $TRADECOMPANY = ''; //检验检疫-贸易国别-澳大利亚
-    public $TOTALFEEUNIT = COIN_INSP;
+    public $TOTALFEEUNIT = '';
     public $COUNTOFGOODSTYPE = '';
     public $WEIGHT = 0;
-    public $WEIGHTUNIT = '035';
+    public $WEIGHTUNIT = '';
     public $NETWEIGHT = 0;
-    public $NETWEIGHTUNIT = '035';
-    public $PLATFORMURL = 'zzhy.com';
+    public $NETWEIGHTUNIT = '';
+    public $PLATFORMURL = '';
     public $COLLUSERCOUNTRYINSP = '';
-    public $SENDUSERCOUNTRYINSP = CONSIGNEE_COUNTRY_CIQ;
+    public $SENDUSERCOUNTRYINSP = '';
     public $PAYNUMBER = '';
     public $PAYENTERPRISECODE = '';
     public $PAYENTERPRISENAME = '';
@@ -69,7 +69,7 @@ class airportOrder extends customsCore
     public $LMSNO = ''; //S账册编号
     public $MANUALNO = ''; //H账册编号
     public $LICENSE_NO = ''; //  许可证号    非必填 50  字符  出口必填
-    public $DECLCODE = '4101985808'; // 郑州市程驰速递有限公司  报关企业海关备案编码  必填  20  字符
+    public $DECLCODE = ''; // 郑州市程驰速递有限公司  报关企业海关备案编码  必填  20  字符
     public $DECLARETYPE = '';
     public $DECLNAME = '';
     public $DEPOSITORGUARANTEE = 0; //保金保函类型 进口必填 保金保函类型【0-担保金，1-保函】 一般进口模式只能填写0；保税模式可以选择填写 0 或 1，出口为非必填
@@ -82,6 +82,30 @@ class airportOrder extends customsCore
 
     public function __construct()
     {
+        $this->CBECODE = $_CFG['cus_cbecode'];
+        $this->CBENAME = $_CFG['cus_cbename'];
+        $this->ECPCODE = $_CFG['cus_ecpcode'];
+        $this->ECPNAME = $_CFG['cus_ecpname'];
+        $this->TAXEDENTERPRISE = $_CFG['cus_taxedenterprise'];
+        $this->CBECODEINSP = $_CFG['cus_cbecodeinsp'];
+        $this->SENDERUSERCOUNTRY = $_CFG['cus_senderusercountry'];
+        $this->SENDERUSERNAME = $_CFG['cus_senderusername'];
+        $this->SENDERUSERADDRESS = $_CFG['cus_senderuseraddress'];
+        $this->SENDERUSERTELEPHONE = $_CFG['cus_senderusertelephone'];
+        $this->ECPCODEINSP = $_CFG['cus_ecpcodeinsp'];
+        $this->TREPCODEINSP = $_CFG['cus_trepcodeinsp'];
+        $this->TRADECOMPANY = $_CFG['cus_tradecompany'];
+        $this->TOTALFEEUNIT = $_CFG['cus_totalfeeunit'];
+        $this->COLLUSERCOUNTRYINSP = $_CFG['cus_collusercountryinsp'];
+        $this->SENDUSERCOUNTRYINSP = $_CFG['cus_sendusercountryinsp'];
+        $this->PAYENTERPRISECODE = $_CFG['cus_payenterprisecode'];
+        $this->PAYENTERPRISENAME = $_CFG['cus_payenterprisename'];
+        $this->LMSNO = $_CFG['cus_lmsno'];
+        $this->MANUALNO = $_CFG['cus_manualno'];
+        $this->DECLCODE = $_CFG['cus_declcode'];
+        $this->DECLNAME = $_CFG['cus_declname'];
+        $this->DEPOSITORGUARANTEE = $_CFG['cus_depositorguarantee'];
+        $this->GUARANTEENO = $_CFG['cus_guaranteeno'];
 //        $this->Url = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs?wsdl';   //测试
 //        $this->location = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs';   //测试
     }
@@ -198,40 +222,40 @@ ETO;
         $MESSAGEBODY .= '<BODYDETAIL>';
         foreach ($goods as $value)
         {
-            $goods_netweight = $value['AMOUNT'] * $value['goods_netweight'];
+            $goods_netweight = $value['goods_number'] * $value['netweight'];
 
             $MESSAGEBODY .= <<<ETO
                 <ORDERLIST>
                     <GNO>{$value['GNO']}</GNO>
-                    <ITEMNO>$this->CBECODE{$value['GOODID']}</ITEMNO>
-                    <SHELFGOODSNAME>{$value['SHELFGOODSNAME']}</SHELFGOODSNAME>
+                    <ITEMNO>$this->CBECODE{$value['goods_sn']}</ITEMNO>
+                    <SHELFGOODSNAME>{$value['goods_name']}</SHELFGOODSNAME>
                     <DESCRIBE></DESCRIBE>
-                    <GOODID>{$value['GOODID']}</GOODID>
-                    <GOODNAME>{$value['GOODNAME']}</GOODNAME>
-                    <SPECIFICATIONS>{$value['SPECIFICATIONS']}</SPECIFICATIONS>
-                    <BARCODE>{$value['BARCODE']}</BARCODE>
-                    <SOURCEPRODUCERCOUNTRY>{$value['origin_code']}</SOURCEPRODUCERCOUNTRY>
-                    <COIN>142</COIN>
-                    <UNIT>{$value['UNIT']}</UNIT>
-                    <UNIT1>{$value['UNIT']}</UNIT1>
-                    <UNIT2>{$value['UNIT2']}</UNIT2>
-                    <AMOUNT>{$value['AMOUNT']}</AMOUNT>
-                    <AMOUNT1>{$value['AMOUNT']}</AMOUNT1>
-                    <AMOUNT2>{$value['AMOUNT2']}</AMOUNT2>
-                    <GOODPRICE>{$value['GOODPRICE']}</GOODPRICE>
-                    <ORDERSUM>{$value['ORDERSUM']}</ORDERSUM>
+                    <GOODID>{$value['goods_name']}</GOODID>
+                    <GOODNAME>{$value['goods_name']}</GOODNAME>
+                    <SPECIFICATIONS>{$value['specifications']}</SPECIFICATIONS>
+                    <BARCODE>{$value['barcode']}</BARCODE>
+                    <SOURCEPRODUCERCOUNTRY>{$value['sourceproducercountry']}</SOURCEPRODUCERCOUNTRY>
+                    <COIN>{$value['coin']}</COIN>
+                    <UNIT>{$value['unit']}</UNIT>
+                    <UNIT1>{$value['unit']}</UNIT1>
+                    <UNIT2>{$value['unit2']}</UNIT2>
+                    <AMOUNT>{$value['goods_number']}</AMOUNT>
+                    <AMOUNT1>{$value['goods_number']}</AMOUNT1>
+                    <AMOUNT2>{$value['goods_number2']}</AMOUNT2>
+                    <GOODPRICE>{$value['goods_price']}</GOODPRICE>
+                    <ORDERSUM>{$value['goods_price']}</ORDERSUM>
                     <FLAG>N</FLAG>
-                    <GOODIDINSP>$this->CBECODEINSP{$value['GOODID']}</GOODIDINSP>
-                    <ORDERID>{$value['ORDERID']}</ORDERID>
-                    <GOODNAMEENGLISH></GOODNAMEENGLISH>
-                    <WEIGTH></WEIGTH>
-                    <WEIGHTUNIT></WEIGHTUNIT>
+                    <GOODIDINSP>{$value['goodidinsp']}</GOODIDINSP>
+                    <ORDERID>$this->ORDERID</ORDERID>
+                    <GOODNAMEENGLISH>{$value['goodnameenglish']}</GOODNAMEENGLISH>
+                    <WEIGTH>{$value['weight']}</WEIGTH>
+                    <WEIGHTUNIT>{$value['weightunit']}</WEIGHTUNIT>
                     <PACKCATEGORYINSP>4M</PACKCATEGORYINSP>
                     <WASTERORNOTINSP></WASTERORNOTINSP>
                     <REMARKSINSP></REMARKSINSP>
-                    <COININSP>156</COININSP>
-                    <UNITINSP>{$value['UNIT']}</UNITINSP>
-                    <SRCCOUNTRYINSP>036</SRCCOUNTRYINSP>
+                    <COININSP>{$value['coininsp']}</COININSP>
+                    <UNITINSP>{$value['unitinsp']}</UNITINSP>
+                    <SRCCOUNTRYINSP>{$value['srccountryinsp']}</SRCCOUNTRYINSP>
                     <NETWEIGHT>$goods_netweight</NETWEIGHT>
                     <RESERVEDFIELD1></RESERVEDFIELD1>
                     <RESERVEDFIELD2></RESERVEDFIELD2>
@@ -260,11 +284,12 @@ ETO;
 
     private function getGoodsByOrderId()
     {
-        $sql = 'SELECT ag.*,o.origin_code,g.goods_netweight'
-                . ' FROM ' . $GLOBALS['ecs']->table('airport_goods') . ' ag'
-                . ' INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON ag.GOODID=g.goods_sn'
-                . ' LEFT JOIN ' . $GLOBALS['ecs']->table('goods_origin') . ' o ON g.origin_id=o.origin_id'
-                . ' WHERE ag.cid = ' . $this->orderId;
+        $sql = 'SELECT og.goods_price,og.goods_number,g.*'
+                . ' FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ag'
+                . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ag.order_sn=o.order_sn'
+                . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON og.order_id=o.order_id'
+                . ' INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON og.goods_id=g.goods_id'
+                . ' WHERE ag.id = ' . $this->orderId;
 
         return $GLOBALS['db']->getAll($sql);
     }

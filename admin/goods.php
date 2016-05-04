@@ -430,14 +430,14 @@ elseif ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit' || $_REQUEST['ac
     $smarty->assign('goods_name_style', $goods_name_style[1]);
     $smarty->assign('cat_list', cat_list(0, $goods['cat_id']));
     $smarty->assign('brand_list', get_brand_list());
-    $smarty->assign('unit_list', get_unit_list());
+    $smarty->assign('unit_list', get_unit_list());  //RenLong 2016-05-04
     $smarty->assign('user_rank_list', get_user_rank_list());
     $smarty->assign('weight_unit', $is_add ? '1' : ($goods['goods_weight'] >= 1 ? '1' : '0.001'));
     $smarty->assign('netweight_unit', $is_add ? '1' : ($goods['goods_netweight'] >= 1 ? '1' : '0.001'));
     $smarty->assign('cfg', $_CFG);
     $smarty->assign('form_act', $is_add ? 'insert' : ($_REQUEST['act'] == 'edit' ? 'update' : 'insert'));
-    $smarty->assign('unit_info', getUnitList());
-    $smarty->assign('origin_country', getOriginCountry());
+    $smarty->assign('unit_info', getUnitList());  //RenLong 2016-05-04
+    $smarty->assign('origin_country', getOriginCountry());  //RenLong 2016-05-04
     if ($_REQUEST['act'] == 'add' || $_REQUEST['act'] == 'edit')
     {
         $smarty->assign('is_add', true);
@@ -802,16 +802,16 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     }
 
     /* 处理商品数据 */
-    $goods_name = !empty($_POST['goods_name']) ? $_POST['goods_name'] : '';
-    $goods_desc = !empty($_POST['goods_desc']) ? $_POST['goods_desc'] : '';
-    $shop_price = !empty($_POST['shop_price']) ? $_POST['shop_price'] : 0;
-    $market_price = !empty($_POST['market_price']) ? $_POST['market_price'] : 0;
+    $goods_name = !empty($_POST['goods_name']) ? $_POST['goods_name'] : '';  //RenLong 2016-05-04
+    $goods_desc = !empty($_POST['goods_desc']) ? $_POST['goods_desc'] : '';  //RenLong 2016-05-04
+    $shop_price = !empty($_POST['shop_price']) ? $_POST['shop_price'] : 0;  //RenLong 2016-05-04
+    $market_price = !empty($_POST['market_price']) ? $_POST['market_price'] : 0;  //RenLong 2016-05-04
     $promote_price = !empty($_POST['promote_price']) ? floatval($_POST['promote_price'] ) : 0;
     $is_promote = empty($promote_price) ? 0 : 1;
     $promote_start_date = ($is_promote && !empty($_POST['promote_start_date'])) ? local_strtotime($_POST['promote_start_date']) : 0;
     $promote_end_date = ($is_promote && !empty($_POST['promote_end_date'])) ? local_strtotime($_POST['promote_end_date']) : 0;
     $goods_weight = !empty($_POST['goods_weight']) ? $_POST['goods_weight'] * $_POST['weight_unit'] : 0;
-    $goods_netweight = !empty($_POST['goods_netweight']) ? $_POST['goods_netweight'] * $_POST['weight_netunit'] : 0;
+    $goods_netweight = !empty($_POST['goods_netweight']) ? $_POST['goods_netweight'] * $_POST['weight_netunit'] : 0;  //RenLong 2016-05-04
     $is_best = isset($_POST['is_best']) ? 1 : 0;
     $is_new = isset($_POST['is_new']) ? 1 : 0;
     $is_hot = isset($_POST['is_hot']) ? 1 : 0;
@@ -824,16 +824,13 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
     $give_integral = isset($_POST['give_integral']) ? intval($_POST['give_integral']) : '-1';
     $rank_integral = isset($_POST['rank_integral']) ? intval($_POST['rank_integral']) : '-1';
     $suppliers_id = isset($_POST['suppliers_id']) ? intval($_POST['suppliers_id']) : '0';
-
     $goods_name_style = $_POST['goods_name_color'] . '+' . $_POST['goods_name_style'];
-
     $catgory_id = empty($_POST['cat_id']) ? '' : intval($_POST['cat_id']);
     $brand_id = empty($_POST['brand_id']) ? '' : intval($_POST['brand_id']);
-
     $goods_thumb = (empty($goods_thumb) && !empty($_POST['goods_thumb_url']) && goods_parse_url($_POST['goods_thumb_url'])) ? htmlspecialchars(trim($_POST['goods_thumb_url'])) : $goods_thumb;
     $goods_thumb = (empty($goods_thumb) && isset($_POST['auto_thumb']))? $goods_img : $goods_thumb;
-    $unit_id = isset($_POST['unit_id']) ? intval($_POST['unit_id']) : '0';
-    $origin_id = intval($_POST['origin_id']);
+    $unit_id = isset($_POST['unit_id']) ? intval($_POST['unit_id']) : '0';  //RenLong 2016-05-04
+    $origin_id = intval($_POST['origin_id']);  //RenLong 2016-05-04
     /* 入库 */
     if ($is_insert)
     {
@@ -843,13 +840,15 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                     "cat_id, brand_id, shop_price, market_price, is_promote, promote_price, " .
                     "promote_start_date, promote_end_date, goods_img, goods_thumb, original_img, keywords, goods_brief, " .
                     "seller_note, goods_weight, goods_number, warn_number, integral, give_integral, is_best, is_new, is_hot, " .
-                    "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, rank_integral, suppliers_id,itemno, describel, goodname, specifications, barcode, taxid, sourceproducercountry, coin, unit, goodidinsp, goodnameenglish, weight, weightunit, gno, srccountryinsp, unitinsp, coininsp)" .
+                    "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, rank_integral, suppliers_id,itemno, describel, goodname, specifications, barcode, taxid, sourceproducercountry, coin, unit, goodidinsp, goodnameenglish, weight, weightunit, gno, srccountryinsp, unitinsp, coininsp,"
+                    . 'goods_netweight,unit_id,origin_id)' .  //RenLong 2016-05-04
                 "VALUES ('$_POST[goods_name]', '$goods_name_style', '$goods_sn', '$catgory_id', " .
                     "'$brand_id', '$shop_price', '$market_price', '$is_promote','$promote_price', ".
                     "'$promote_start_date', '$promote_end_date', '$goods_img', '$goods_thumb', '$original_img', ".
                     "'$_POST[keywords]', '$_POST[goods_brief]', '$_POST[seller_note]', '$goods_weight', '$goods_number',".
                     " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', '$is_on_sale', '$is_alone_sale', $is_shipping, ".
-                    " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$rank_integral', '$suppliers_id','$_POST[itemno]','$_POST[describel]','$_POST[goodname]','$_POST[specifications]','$_POST[barcode]','$_POST[taxid]','$_POST[sourceproducercountry]','$_POST[coin]','$_POST[unit]','$_POST[goodidinsp]','$_POST[goodnameenglish]','$_POST[weight]','$_POST[weightunit]','$_POST[gno]','$_POST[srccountryinsp]','$_POST[unitinsp]','$_POST[coininsp]')";
+                    " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$rank_integral', '$suppliers_id','$_POST[itemno]','$_POST[describel]','$_POST[goodname]','$_POST[specifications]','$_POST[barcode]','$_POST[taxid]','$_POST[sourceproducercountry]','$_POST[coin]','$_POST[unit]','$_POST[goodidinsp]','$_POST[goodnameenglish]','$_POST[weight]','$_POST[weightunit]','$_POST[gno]','$_POST[srccountryinsp]','$_POST[unitinsp]','$_POST[coininsp]',"
+                    . "$goods_netweight,$unit_id,$origin_id)";  //RenLong 2016-05-04
         }
         else
         {
@@ -857,13 +856,15 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                     "cat_id, brand_id, shop_price, market_price, is_promote, promote_price, " .
                     "promote_start_date, promote_end_date, goods_img, goods_thumb, original_img, keywords, goods_brief, " .
                     "seller_note, goods_weight, goods_number, warn_number, integral, give_integral, is_best, is_new, is_hot, is_real, " .
-                    "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, extension_code, rank_integral,itemno, describel, goodname, specifications, barcode, taxid, sourceproducercountry, coin, unit, goodidinsp, goodnameenglish, weight, weightunit, gno, srccountryinsp, unitinsp, coininsp)" .
+                    "is_on_sale, is_alone_sale, is_shipping, goods_desc, add_time, last_update, goods_type, extension_code, rank_integral,itemno, describel, goodname, specifications, barcode, taxid, sourceproducercountry, coin, unit, goodidinsp, goodnameenglish, weight, weightunit, gno, srccountryinsp, unitinsp, coininsp,"
+                    . 'goods_netweight,unit_id,origin_id)' .  //RenLong 2016-05-04
                 "VALUES ('$_POST[goods_name]', '$goods_name_style', '$goods_sn', '$catgory_id', " .
                     "'$brand_id', '$shop_price', '$market_price', '$is_promote','$promote_price', ".
                     "'$promote_start_date', '$promote_end_date', '$goods_img', '$goods_thumb', '$original_img', ".
                     "'$_POST[keywords]', '$_POST[goods_brief]', '$_POST[seller_note]', '$goods_weight', '$goods_number',".
                     " '$warn_number', '$_POST[integral]', '$give_integral', '$is_best', '$is_new', '$is_hot', 0, '$is_on_sale', '$is_alone_sale', $is_shipping, ".
-                    " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$code', '$rank_integral','$_POST[itemno]','$_POST[describel]','$_POST[goodname]','$_POST[specifications]','$_POST[barcode]','$_POST[taxid]','$_POST[sourceproducercountry]','$_POST[coin]','$_POST[unit]','$_POST[goodidinsp]','$_POST[goodnameenglish]','$_POST[weight]','$_POST[weightunit]','$_POST[gno]','$_POST[srccountryinsp]','$_POST[unitinsp]','$_POST[coininsp]')";
+                    " '$_POST[goods_desc]', '" . gmtime() . "', '". gmtime() ."', '$goods_type', '$code', '$rank_integral','$_POST[itemno]','$_POST[describel]','$_POST[goodname]','$_POST[specifications]','$_POST[barcode]','$_POST[taxid]','$_POST[sourceproducercountry]','$_POST[coin]','$_POST[unit]','$_POST[goodidinsp]','$_POST[goodnameenglish]','$_POST[weight]','$_POST[weightunit]','$_POST[gno]','$_POST[srccountryinsp]','$_POST[unitinsp]','$_POST[coininsp]',"
+                    . "$goods_netweight,$unit_id,$origin_id)";  //RenLong 2016-05-04
         }
     }
     else
@@ -896,7 +897,10 @@ elseif ($_REQUEST['act'] == 'insert' || $_REQUEST['act'] == 'update')
                 "promote_price = '$promote_price', " .
                 "promote_start_date = '$promote_start_date', " .
                 "suppliers_id = '$suppliers_id', " .
-                "promote_end_date = '$promote_end_date', ";
+                "promote_end_date = '$promote_end_date',".
+                "goods_netweight = '$goods_netweight',".  //RenLong 2016-05-04
+                "unit_id = '$unit_id',".  //RenLong 2016-05-04
+                "origin_id = '$origin_id',";  //RenLong 2016-05-04
 
         /* 如果有上传图片，需要更新数据库 */
         if ($goods_img)

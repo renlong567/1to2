@@ -2779,4 +2779,29 @@ if (!function_exists('array_combine')) {
     }
 }
 
+/**
+ * @desc 获取商品规格列表
+ * @author RenLong
+ * @date 2016-05-04
+ * @return []
+ */
+function getUnitList()
+{
+    $sql = 'SELECT id, unit_name FROM ' . $GLOBALS['ecs']->table('cus_jy_unit');
+    $unit_info = $GLOBALS['db']->getAll($sql);
+    return $unit_info;
+}
+
+/**
+ * @desc 获取原产国列表
+ * @author RenLong
+ * @date 2016-05-04
+ * @return []
+ */
+function getOriginCountry()
+{
+    $sql = 'SELECT id, x_cname FROM ' . $GLOBALS['ecs']->table('cus_jy_country');
+    $origin_country = $GLOBALS['db']->getAll($sql);
+    return $origin_country;
+}
 ?>

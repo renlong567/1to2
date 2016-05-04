@@ -238,4 +238,8 @@ define('LICENSE_VERSION', '1.0');
 /* 配送方式 */
 define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|presswork|sf_express|sto_express|yto|zto');
 
+/* RenLong 2016-05-04 报关状态 */
+define('AIRPORT_CUSTOMS_FAIL', 0); //失败
+define('AIRPORT_CUSTOMS_OK', 1); //成功
+define('AIRPORT_CUSTOMS_NORMAL', 99); //未申报
 ?>

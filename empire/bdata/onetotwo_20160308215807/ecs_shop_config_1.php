@@ -223,6 +223,8 @@ E_D("replace into `ecs_shop_config` values('1023','10','cus_sendusercountryinsp'
 E_D("replace into `ecs_shop_config` values('1024','10','cus_collusercountryinsp','text','','','156','1');");
 E_D("replace into `ecs_shop_config` values('1025','10','cus_tradecompany','text','','','156','1');");
 E_D("replace into `ecs_shop_config` values('1026','10','cus_totalfeeunit','text','','','156','1');");
+E_D("replace into `ecs_shop_config` values('1027','10','cus_depositorguarantee','text','','','0','1');");
+E_D("replace into `ecs_shop_config` values('1028','10','cus_guaranteeno','text','','','12345abcd','1');");
 
 require("../../inc/footer.php");
 ?>
