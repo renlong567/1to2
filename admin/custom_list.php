@@ -185,7 +185,7 @@ elseif ($_REQUEST['act'] == 'customsAction')
             $order = get_airport_info($v);
 
             /** ======================2.1进出口订单信息=========================== */
-            switch ($order['st_stock_flag'])
+            switch ($billmode)
             {
                 case CUSTOMS_MODE_JIHUO:
 //                    $airportOrder->SENDERUSERCOUNTRY = JIHUO_SEND_COUNTRY_CODE_CUS;
@@ -259,15 +259,13 @@ elseif ($_REQUEST['act'] == 'customsAction')
     if ($_POST['operate'] == 'o6')
     {
         require_once ROOT_PATH . 'includes/modules/customs/alipay.php';
-        require_once ROOT_PATH . 'includes/modules/customs/wxpay.php';
         require_once ROOT_PATH . 'includes/lib_order.php';
 
-        $alipayModel = new alipay();
+        $alipayModel = new alipay($_CFG);
 
         foreach ($_POST['order'] as $v)
         {
             $order = get_airport_info($v);
-            $pay_source = get_order_pay_source($order['order_id']);
             switch ($order['pay_name'])
             {
                 case '支付宝':

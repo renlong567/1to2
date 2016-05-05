@@ -15,16 +15,15 @@ require_once ROOT_PATH . 'includes/modules/customs/customsCore.php';
 
 class airportEMS extends customsCore
 {
-
     //电子运单报文头<Head>
     public $MessageID = ''; //   报文编号    VARCHAR2(30)    非空  每份报文唯一的编号，规则：报文类型+当前系统时间（YYYYMMDDHHMMSS）+4位序号
     public $MessageType = 200200;   // 报文类型    VARCHAR2(6) 非空  运单报文类型； 200200
-    public $USERNAME = 'W0078';  //    认证用户名   VARCHAR2(20)    非空  
+    public $USERNAME = '';  //    认证用户名   VARCHAR2(20)    非空  
     public $Signature = ''; //   认证加密串   VARCHAR2(255)   非空  认证用户名+授权码+报文日期 通过MD5加密后的字符串
-    public $SenderID = 'W0078';  //    接入客户编号  VARCHAR2(20)    非空  填写接入接口的编号；(填写接入方的客户代码)系统会根据此客户代码作校验，系统中不存在该客户代码，接口接不通
+    public $SenderID = '';  //    接入客户编号  VARCHAR2(20)    非空  填写接入接口的编号；(填写接入方的客户代码)系统会根据此客户代码作校验，系统中不存在该客户代码，接口接不通
     public $SendTime = '';  //    报文日期    DATETIME    非空  YYYY-MM-DD HH24:MM:SS
     public $Version = '1.0';   // 报文版本号   VARCHAR2(10)    非空  默认：1.0
-    public $key = 'SQMW0078';
+    public $key = '';
     //电子运单报文体<EWay>
     public $ORDERID = '';   //     订单编号    必填  50  数字+英文字母 
     public $DELIVERYENTERPRISECODE = '';    //  物流企业代码  必填  20  数字+英文字母 
@@ -73,7 +72,7 @@ class airportEMS extends customsCore
     public $TRANSFERREGIONINSP = TRANSFER_REGION_INSP;    //  检验检疫起运国/抵运国     必填  10  字符  国别代码 
     public $PACKCATEGORYINSP = PACKAGE_TYPE_CIQ;  //    检验检疫包装种类    必填  10  字符  检验检疫包装种类 
     public $WLQYCODEINSP = '';  //    物流企业检验检疫备案编号    必填  50  英文字符+数字 
-    public $CBECODEINSP = '';   //     电商企业检验检疫备案编号    必填  50  英文字符+数字 
+    public $CBECODEINSP = '';   //     电商企业检验检 疫备案编号    必填  50  英文字符+数字 
     public $COININSP = COIN_INSP;  //    币制（检验检疫代码）  必填  3   字符  检验检疫币制 
     public $CBECODE = '';   //     电商企业代码  必填  20  英文字符+数字 
     public $CBENAME = '';   //     电商企业名称  非必填     50  汉字 
@@ -94,6 +93,9 @@ class airportEMS extends customsCore
         $this->time = local_date('YmdHis', $_SERVER['REQUEST_TIME']);
         $this->SendTime = local_date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
 
+        $this->USERNAME = $_CFG['cus_ems_USERNAME'];
+        $this->SenderID = $_CFG['cus_ems_SenderID'];
+        $this->key = $_CFG['cus_ems_key'];
         $this->CBECODE = $_CFG['cus_cbecode'];
         $this->CBENAME = $_CFG['cus_cbename'];
         $this->ECPCODE = $_CFG['cus_ecpcode'];

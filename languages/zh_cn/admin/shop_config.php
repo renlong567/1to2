@@ -23,6 +23,9 @@ $_LANG['cfg_name']['cus_ecpname'] = '电商平台名称(海关备案)';
 $_LANG['cfg_name']['cus_taxedenterprise'] = '缴税单位编号(海关备案)';
 $_LANG['cfg_name']['cus_deliveryenterprisecode'] = '物流企业代码(海关备案)';
 $_LANG['cfg_name']['cus_deliveryenterprisename'] = '物流企业名称(海关备案)';
+$_LANG['cfg_name']['cus_ems_USERNAME'] = '物流企业认证用户名(EMS)';
+$_LANG['cfg_name']['cus_ems_SenderID'] = '物流企业接入客户编号(EMS)';
+$_LANG['cfg_name']['cus_ems_key'] = '物流企业认证用户KEY(EMS)';
 
 $_LANG['cfg_name']['cus_senderuseraddress'] = '发货人地址(海关)';
 $_LANG['cfg_name']['cus_senderusercountry'] = '发货人所在国(海关)';
