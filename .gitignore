@@ -58,3 +58,4 @@ ErrorFiles/404.html
 ErrorFiles/500.html
 u.php
 ErrorFiles/401.html
+data/config.php
