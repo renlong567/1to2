@@ -22,14 +22,14 @@ class alipay extends customsCore {
     public $sign = '';
     public $out_request_no = '';    //报关流水号 String(32) 
     public $trade_no = '';  //支付宝交易号
-    public $merchant_customs_code = COMPANY_CUSTOMS_NUMBER; //商户海关备案编号
+    public $merchant_customs_code = ''; //商户海关备案编号
     public $amount = 0; //报关金额
     public $customs_place = PAY_TYPE_ALIPAY_CUSTOMS_ZONGBAOQU; //海关编号
-    private $merchant_customs_name = COMPANY_NAME; //商户海关备案名称  可空
+    private $merchant_customs_name = ''; //商户海关备案名称  可空
     public $is_split = '';  //是否拆单 可空
     public $sub_out_biz_no = '';    //子订单号  可空
 
-    public function __construct() {
+    public function __construct($_CFG) {
         $this->Url = 'https://mapi.alipay.com/gateway.do';
         $payment = get_payment(__CLASS__);
 
@@ -37,6 +37,9 @@ class alipay extends customsCore {
             $this->partner = $payment['alipay_partner'];
             $this->key = $payment['alipay_key'];
         }
+        
+        $this->merchant_customs_code = $_CFG['cus_cbecode'];
+        $this->merchant_customs_name = $_CFG['cus_cbename'];
     }
 
     public function send() {

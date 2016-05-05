@@ -1,0 +1,23 @@
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,listtable.js"}
+<div class="list-div" id="listDiv">
+  <form action="custom_list.php?act=excel_order_action" method="post" enctype="multipart/form-data">
+    <table cellpadding="3" cellspacing="1">
+      <tr>
+        <th colspan="2">导入物流信息</th>
+      </tr>
+      <tr>
+        <td>上传文件</td>
+        <td><input type="file" name="excel"></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>1、文件格式必须为.xls格式；<br />2、点击下载 <a href="../data/airport/order_airport.xls">物流信息模板</a> ；</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="导入物流信息"></td>
+      </tr>
+    </table>
+  </form>
+</div>

@@ -21,7 +21,7 @@ if ($_REQUEST['act'] == 'list')
     $airport_list = airport_list();
     // header头部模板赋值
     $smarty->assign('ur_here', '报关订单列表');
-    $smarty->assign('action_link', array('text' => '检测新的订单', 'href' => 'custom_list.php?act=check'));
+    $smarty->assign('action_link', array('text' => '导入物流信息准备申报', 'href' => 'custom_list.php?act=check'));
     $smarty->assign('res', $airport_list['res']);
     $smarty->assign('filter', $airport_list['filter']);
     $smarty->assign('record_count', $airport_list['filter']['record_count']);
@@ -150,64 +150,6 @@ if ($_REQUEST['act'] == 'list')
     $smarty->assign($sort_flag['tag'], $sort_flag['img']);
 
     make_json_result($smarty->fetch('airport_list.htm'), '', array('filter' => $airport_list['filter'], 'page_count' => $airport_list['filter']['page_count']));
-
-}elseif ($_REQUEST['act'] == 'check')
-{
-    $data_order = array();    //初始化订单数据
-    $data_goods = array();    //初始化商品数据
-    $sql = 'SELECT '
-            . 'o.*,'
-            . 'a.region_name as province,'
-            . 'b.region_name as city,'
-            . 'c.region_name as district,'
-            . 'u.customerid,'
-            . 'ao.id'
-            . ' FROM ' . $GLOBALS['ecs']->table('order_info') . ' o' .
-            ' INNER JOIN ' . $GLOBALS['ecs']->table('users') . ' u ON o.user_id=u.user_id' .
-            ' INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' a ON o.province=a.region_id' .
-            ' INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' b ON o.city=b.region_id' .
-            ' INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' c ON o.district=c.region_id' .
-            ' LEFT JOIN ' . $GLOBALS['ecs']->table('airport_order') . ' ao ON o.order_sn=ao.order_sn' .
-            ' WHERE ao.order_sn IS NULL' .
-            ' ORDER BY o.order_sn ASC';
-    $data = $GLOBALS['db']->getAll($sql);
-
-    if($data)
-    {
-        foreach($data as $key => $value)
-        {
-            $data_order['import_time'] = $_SERVER['REQUEST_TIME'];
-            $data_order['order_sn'] = $value['order_sn'];
-            $data_order['pay_time'] = $value['pay_time'];
-            $data_order['order_amount'] = $value['money_paid']; // 总费用
-            $data_order['goods_amount'] = $value['goods_amount']; // 货值
-            $data_order['consignee'] = $value['consignee']; // 收货人名称
-            $data_order['address'] = $value['province'] . $value['city'] . $value['district'] . $value['address']; // 收货人地址
-            $data_order['mobile'] = $value['mobile']; // 收货人电话
-            $data_order['consignee_idc'] = $value['customerid']; // 证件号码
-            $data_order['paymentNo'] = $value['pay_number']; // 支付交易号
-            $data_order['logisticsNo'] = $value['invoice_no']; // 物流运单号
-            $data_order['order_addtime'] = $value['add_time']; // 订单提交时间
-            $data_order['shipping_fee'] = $value['shipping_fee']; // 运费
-            $data_order['taxfee'] = $value['tax']; // 进口行邮税
-
-            $data_order = array_map(strip_tags, $data_order);
-            $data_order = array_map(mysql_real_escape_string, $data_order);
-
-            // 替换特殊字符
-            $data_order['consignee'] = str_replace(' ', '', $data_order['consignee']);
-            $data_order['mobile'] = str_replace(' ', '', $data_order['mobile']);
-            $data_order['mobile'] = str_replace('-', '', $data_order['mobile']);
-            $data_order['address'] = str_replace('<', '（', $data_order['address']);
-            $data_order['address'] = str_replace('>', '）', $data_order['address']);
-
-            $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('airport_order'), $data_order, 'INSERT');
-        }
-    }
-
-    $link[0]['text'] = '返回列表';
-    $link[0]['href'] = 'custom_list.php';
-    sys_msg('同步完成',0, $link);
 }
 /**
  * @desc 推送报文
@@ -295,10 +237,11 @@ elseif ($_REQUEST['act'] == 'customsAction')
     {
         require_once ROOT_PATH . 'includes/modules/customs/airportEMS.php';
 
-        $airportEMS = new airportEMS();
+        $airportEMS = new airportEMS($_CFG);
         $airportEMS->orderIdArr = $_POST['order'];
         $airportEMS->JCBORDERTIME = $jcbOrderTime;
         $airportEMS->MODIFYMARK = $modifyMark;
+        $airportEMS->BILLMODE = $billmode;
         switch ($target)
         {
             case 'zongbao':
@@ -380,7 +323,141 @@ elseif ($_REQUEST['act'] == 'remove')
         make_json_result('删除失败');
     }
 }
+// excel订单导入
+if ($_REQUEST['act'] == 'check')
+{
+    // header头部模板赋值
+    $smarty->assign('ur_here', '导入物流信息');
+    $smarty->assign('action_link', array('href'=>'custom_list.php?act=list', 'text' => '返回三单列表'));
+    $smarty->display('airport_excel.htm');
+}
+elseif ($_REQUEST['act'] == 'excel_order_action')
+{
+    // excel导入操作
+    // 文件上传成功处理
+    if ($_FILES['excel']['error'] == UPLOAD_ERR_OK)
+    {
+        // 判断文件格式
+        if (strpos($_FILES['excel']['type'], 'excel'))
+        {
+            // 定义文件上传目录
+            $uploaddir = ROOT_PATH . "upload/file/" . date('Ymd');
+            // 创建文件上传目录
+            if (!is_dir($uploaddir))
+            {
+                if (!mkdir($uploaddir))
+                {
+                    echo '<script>alert("上传目录没有create权限！请联系管理员修改！");location="airport.php?act=excel"</script>';
+                }
+            }
 
+            // 定义文件上传名
+            $uploadfile = $uploaddir . '/' . uniqid() . '.xls';
+
+            // 保存上传的文件
+            if (!move_uploaded_file($_FILES['excel']['tmp_name'], $uploadfile))
+            {
+                // 文件保存失败！
+                p_message("文件上传失败！请联系管理员修改！", "airport.php?act=excel");
+            }
+
+
+            // excel导入操作 使用PHPExcel类
+            require_once ROOT_PATH . 'includes/phpexcel.php';
+            $excel = PHPExcel_IOFactory::load($uploadfile); // 从文件加载excel
+            $sheet = $excel->getActiveSheet(); // 得到活动的工作表
+            $rows = $sheet->getHighestRow(); // 得到总条数
+            $data_order = array();    //初始化订单数据
+            $data_goods = array();    //初始化商品数据
+
+            // 循环读取数据，从第2行开始
+            for ($i = 2; $i <= $rows; $i++)
+            {
+                $order_sn = trim($sheet->getCellByColumnAndRow(0, $i)->getValue());
+
+                $sql = 'SELECT '
+                        . 'o.*,'
+                        . 'a.region_name as province,'
+                        . 'b.region_name as city,'
+                        . 'c.region_name as district,'
+                        . 'u.customerid'
+                        . ' FROM ' . $GLOBALS['ecs']->table('order_info') . ' o' .
+                        ' INNER JOIN ' . $GLOBALS['ecs']->table('users') . ' u ON o.user_id=u.user_id' .
+                        ' INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' a ON o.province=a.region_id' .
+                        ' INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' b ON o.city=b.region_id' .
+                        ' INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' c ON o.district=c.region_id' .
+                        ' WHERE o.order_sn=\'' . $order_sn . '\'';
+                $data = $GLOBALS['db']->getRow($sql);
+
+                if ($data)
+                {
+                    // 判断是否已导入过
+                    $sql = 'select order_sn from ' . $ecs->table('airport_order') . " where order_sn='$order_sn'";
+                    if ($db->getOne($sql))
+                    {
+                        $repeat .= $order_sn . '|';
+                        continue;
+                    }
+
+                    $data_order['import_time'] = $_SERVER['REQUEST_TIME'];
+                    $data_order['order_sn'] = $data['order_sn'];
+                    $data_order['pay_time'] = $data['pay_time'];
+                    $data_order['order_amount'] = $data['money_paid']; // 总费用
+                    $data_order['goods_amount'] = $data['goods_amount']; // 货值
+                    $data_order['consignee'] = $data['consignee']; // 收货人名称
+                    $data_order['address'] = $data['province'] . $data['city'] . $data['district'] . $data['address']; // 收货人地址
+                    $data_order['mobile'] = $data['mobile']; // 收货人电话
+                    $data_order['consignee_idc'] = $data['customerid']; // 证件号码
+                    $data_order['paymentNo'] = $data['pay_number']; // 支付交易号
+                    $data_order['logisticsNo'] = $data['invoice_no']; // 物流运单号
+                    $data_order['order_addtime'] = $data['add_time']; // 订单提交时间
+                    $data_order['shipping_fee'] = $data['shipping_fee']; // 运费
+                    $data_order['taxfee'] = $data['tax']; // 进口行邮税
+                    $data_order['batchNumbers'] = trim($sheet->getCellByColumnAndRow(1, $i)->getValue()); // 批次号
+                    $data_order['totalLogisticsNo'] = trim($sheet->getCellByColumnAndRow(2, $i)->getValue()); // 总运单号
+
+                    $data_order = array_map(strip_tags, $data_order);
+                    $data_order = array_map(mysql_real_escape_string, $data_order);
+
+                    // 替换特殊字符
+                    $data_order['consignee'] = str_replace(' ', '', $data_order['consignee']);
+                    $data_order['mobile'] = str_replace(' ', '', $data_order['mobile']);
+                    $data_order['mobile'] = str_replace('-', '', $data_order['mobile']);
+                    $data_order['address'] = str_replace('<', '（', $data_order['address']);
+                    $data_order['address'] = str_replace('>', '）', $data_order['address']);
+
+                    $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('airport_order'), $data_order, 'INSERT');
+                }
+            }
+
+            $msg = empty($repeat) ? '全部导入成功~' : '导入完成，其中有重复订单:' . $repeat;
+            sys_msg($msg);
+        }
+        else
+        {
+            p_message("只支持.xls格式的excel表格！", "airport.php?act=excel");
+        }
+    }
+    elseif ($_FILES['excel']['error'] == UPLOAD_ERR_INI_SIZE)
+    {
+        p_message("上传文件太大！", "airport.php?act=excel");
+    }
+    elseif ($_FILES['excel']['error'] == UPLOAD_ERR_NO_FILE)
+    {
+        p_message("没有选定上传文件！", "airport.php?act=excel");
+    }
+    elseif ($_FILES['excel']['error'] == UPLOAD_ERR_CANT_WRITE)
+    {
+        p_message("文件夹没有写入权限！", "airport.php?act=excel");
+    }
+}
+
+// js打印输出，并跳转页面
+function p_message($info, $url)
+{
+    echo "<script>alert('{$info}');location='{$url}'</script>";
+    die;
+}
 
 function haiguancheck($value){
         $errmsg=array();

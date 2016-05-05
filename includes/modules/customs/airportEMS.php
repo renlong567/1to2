@@ -27,8 +27,8 @@ class airportEMS extends customsCore
     public $key = 'SQMW0078';
     //电子运单报文体<EWay>
     public $ORDERID = '';   //     订单编号    必填  50  数字+英文字母 
-    public $DELIVERYENTERPRISECODE = LOGISTICS_EMS_CODE_AIRPORT;    //  物流企业代码  必填  20  数字+英文字母 
-    public $DELIVERYENTERPRISENAME = LOGISTICS_EMS_NAME_AIRPORT;    //  物流企业名称  必填  50  汉字 
+    public $DELIVERYENTERPRISECODE = '';    //  物流企业代码  必填  20  数字+英文字母 
+    public $DELIVERYENTERPRISENAME = '';    //  物流企业名称  必填  50  汉字 
     public $TOTALTRANSFERNUMBER = '';   //     总运单号    必填  30  字符 
     public $TRANSFERNUMBER = '';    //  运单号     必填  30  字符  物流面单号 
     public $ECPCODE = '';   //     电商平台代码  必填  20  数字+英文字母 
@@ -54,11 +54,11 @@ class airportEMS extends customsCore
     public $PACKCATEGORY = PACKAGE_TYPE_CUS;  //    包装种类    必填  10  字符  包装种类代码 
     public $PACKNUM = 1;   //     件数  必填  10  数字 
     public $NETWEIGHT = ''; //   净重  必填  10  数字，4位小数 
-    public $GOODSNAME = ''; //   商品名称    必填  200     汉字 
-    public $SHIPNAME = SHIP_NAME;  //    运输工具名称  非必填     20  汉字 
+    public $GOODSNAME = ''; //   商品名称    必填  200     汉字
+    public $SHIPNAME = '';  //    运输工具名称  非必填     20  汉字 
     public $DESTINATIONPORT = '';   //     装运港/指运港     非必填     6   字符 
     public $IETYPE = 'I';    //  进出口标志   必填  1   字符  I-进口；E-出口 
-    public $TRADECOUNTRY = TRADE_COUNTRY;  //    贸易国别    必填  3   字符 
+    public $TRADECOUNTRY = '';  //    贸易国别    必填  3   字符 
     public $MODIFYMARK = '';    //  操作类型    必填  1   字符  1-新增；2-修改；3-删除 
     public $BUSINESSTYPE = 4;  //    快递类型    必填          1标准快递，4经济快递，5：国际快递
     public $REMARK = '';    //  备注  非必填     300     汉字 
@@ -72,7 +72,7 @@ class airportEMS extends customsCore
     public $APPLYPORTINSP = ''; //   检验检疫申报口岸代码  必填  10  字符  为属地检验检疫机构代码 
     public $TRANSFERREGIONINSP = TRANSFER_REGION_INSP;    //  检验检疫起运国/抵运国     必填  10  字符  国别代码 
     public $PACKCATEGORYINSP = PACKAGE_TYPE_CIQ;  //    检验检疫包装种类    必填  10  字符  检验检疫包装种类 
-    public $WLQYCODEINSP = LOGISTICS_EMS_CODE_INSP;  //    物流企业检验检疫备案编号    必填  50  英文字符+数字 
+    public $WLQYCODEINSP = '';  //    物流企业检验检疫备案编号    必填  50  英文字符+数字 
     public $CBECODEINSP = '';   //     电商企业检验检疫备案编号    必填  50  英文字符+数字 
     public $COININSP = COIN_INSP;  //    币制（检验检疫代码）  必填  3   字符  检验检疫币制 
     public $CBECODE = '';   //     电商企业代码  必填  20  英文字符+数字 
@@ -84,16 +84,16 @@ class airportEMS extends customsCore
 
     public function __construct($_CFG)
     {
-//        $wsdlUrl = 'http://219.134.187.38:7002/zz_xzjcApiServer/LoadDataPortService?wsdl';   //测试
-//        $location = 'http://219.134.187.38:7002/zz_xzjcApiServer/LoadDataPortService';   //测试
-        $wsdlUrl = 'http://211.156.193.152:8080/zz_xzjcApiServer/LoadDataPortService?wsdl';   //正式
-        $location = 'http://211.156.193.152:8080/zz_xzjcApiServer/LoadDataPortService';   //正式
+        $wsdlUrl = 'http://219.134.187.38:7002/zz_xzjcApiServer/LoadDataPortService?wsdl';   //测试
+        $location = 'http://219.134.187.38:7002/zz_xzjcApiServer/LoadDataPortService';   //测试
+//        $wsdlUrl = 'http://211.156.193.152:8080/zz_xzjcApiServer/LoadDataPortService?wsdl';   //正式
+//        $location = 'http://211.156.193.152:8080/zz_xzjcApiServer/LoadDataPortService';   //正式
 
         $this->Url = $wsdlUrl;
         $this->location = $location;
         $this->time = local_date('YmdHis', $_SERVER['REQUEST_TIME']);
         $this->SendTime = local_date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
-        
+
         $this->CBECODE = $_CFG['cus_cbecode'];
         $this->CBENAME = $_CFG['cus_cbename'];
         $this->ECPCODE = $_CFG['cus_ecpcode'];
@@ -103,6 +103,10 @@ class airportEMS extends customsCore
         $this->SENDERUSERNAME = $_CFG['cus_senderusername'];
         $this->SENDERUSERADDRESS = $_CFG['cus_senderuseraddress'];
         $this->SENDERUSERTELEPHONE = $_CFG['cus_senderusertelephone'];
+        $this->TRADECOUNTRY = $_CFG['cus_tradecompany'];
+        $this->WLQYCODEINSP = $_CFG['cus_trepcodeinsp'];
+        $this->DELIVERYENTERPRISECODE = $_CFG['cus_deliveryenterprisecode'];
+        $this->DELIVERYENTERPRISENAME = $_CFG['cus_deliveryenterprisename'];
     }
 
     /**
@@ -253,25 +257,7 @@ ETO;
 //        var_dump($orderInfo);exit;
         foreach ($orderInfo as $value)
         {
-            switch ($value['st_stock_flag'])
-            {
-                case CUSTOMS_MODE_JIHUO:
-                    $this->SENDERUSERCOUNTRY = JIHUO_SEND_COUNTRY_CODE_CUS;  //国检
-                    $this->SENDERUSERNAME = JIHUO_SEND_NAME;
-                    $this->SENDERUSERADDRESS = JIHUO_SEND_ADDRESS;
-                    $this->SENDERUSERTELEPHONE = JIHUO_SEND_MOBILE;
-                    $this->IDTYPE = JIHUO_IDC_TYPE;
-                    $this->BILLMODE = CUSTOMS_MODE_JIHUO;
-                    break;
-                case CUSTOMS_MODE_BEIHUO:
-                    $this->SENDERUSERCOUNTRY = BEIHUO_SEND_COUNTRY_CODE_CUS;  //国检
-                    $this->SENDERUSERNAME = BEIHUO_SEND_NAME;
-                    $this->SENDERUSERADDRESS = BEIHUO_SEND_ADDRESS;
-                    $this->SENDERUSERTELEPHONE = BEIHUO_SEND_MOBILE;
-                    $this->IDTYPE = BEIHUO_IDC_TYPE;
-                    $this->BILLMODE = CUSTOMS_MODE_BEIHUO;
-                    break;
-            }
+            $this->IDTYPE = $value['idtype'];
 
             $data .= <<<ETO
 <EWay>
@@ -343,10 +329,18 @@ ETO;
      */
     private function getOrderInfo()
     {
-        $sql = 'SELECT o.*,SUM(g.AMOUNT) AS quantity,g.GOODNAME'
-                . ' FROM ' . $GLOBALS['ecs']->table('airport_order') . ' o'
-                . ' INNER JOIN ' . $GLOBALS['ecs']->table('airport_goods') . ' g ON o.id=g.cid' . ' WHERE o.id IN(' . implode(',', $this->orderIdArr) . ')'
-                . ' GROUP BY o.order_sn';
+        $sql = 'SELECT '
+                . 'ao.*,'
+                . 'o.idtype,'
+                . 'SUM(g.goods_weight*og.goods_number) as weight,'
+                . 'g.goods_name,'
+                . 'COUNT(*) as quantity '
+                . 'FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ao '
+                . 'INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ao.order_sn=o.order_sn '
+                . 'INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON o.order_id=og.order_id '
+                . 'INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON g.goods_id=og.goods_id '
+                . ' WHERE ao.id IN(' . implode(',', $this->orderIdArr) . ')'
+                . ' GROUP BY ao.order_sn';
 
         return $GLOBALS['db']->getAll($sql);
     }

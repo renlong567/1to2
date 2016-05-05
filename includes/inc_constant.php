@@ -246,4 +246,30 @@ define('CUSTOMS_MODE_BEIHUO', 2);    //保税模式（备货）
 define('AIRPORT_CUSTOMS_FAIL', 0); //失败
 define('AIRPORT_CUSTOMS_OK', 1); //成功
 define('AIRPORT_CUSTOMS_NORMAL', 99); //未申报
+
+/* 报关支付企业信息 RenLong 2016-05-04 */
+define('PAY_TYPE_ALIPAY_CUSTOMS_ZONGBAOQU', 'HENAN'); //综保区
+
+/* 物流运输信息 */
+define('PACKAGE_TYPE_CUS', 2); //包装类别(海)
+define('PACKAGE_TYPE_CIQ', '4M');  //包装类别(检)
+define('TRANSPORTATION_METHOD', 5); //运输方式(检)
+define('SHIP_CODE_INSP', 50);  //运输工具代码(检)
+define('JCB_ORDER_PORT_ZONGBAO', 4612);  //进/出境口岸（海）（综保）
+define('JCB_ORDER_PORT_INSP_ZONGBAO', 410900);  //进/出境口岸(检)（综保）
+define('TRANSFER_TYPE', 5); //运输方式
+define('SHIP_NAME', '飞机');  //运输工具名称(关)
+define('SHIP_NAME_INSP', '飞机');  //运输工具名称(检)
+define('TRANSFER_REGION_INSP', '036'); //检疫起运/抵运国代码
+define('CBE_CODE_INSP', '');  //电商企业国检备案编号
+define('ECP_CODE_INSP', '');  //电商平台CIQ检验检疫备案编号
+define('TREP_CODE_INSP', '');  //物流企业CIQ检验检疫备案编号
+define('COIN_INSP', 156); //币制代码(检)
+define('COIN_INSP_CUS', 142); //币制代码(关)
+define('APPLY_PORT_INSP_ZONGBAO', 410900);  //申报口岸代码（检）（综保）
+define('DECLARE_PORT_ZONGBAO', 4612);  //申报口岸代码（海）（综保）
+
+/* 收货人常用信息 */
+define('CONSIGNEE_COUNTRY_CIQ', 156);   //收件人所在国(检)
+define('CONSIGNEE_COUNTRY_CUS', 142);   //收件人所在国(海)必填
 ?>

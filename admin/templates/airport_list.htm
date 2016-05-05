@@ -7,6 +7,8 @@
     <form action="javascript:searchCustoms()" name="searchForm">
         <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH">
         订单号：<input id="orderNo" name="orderNo" type="text" size="15">
+        批次号：<input id="batchNumbers" name="batchNumbers" type="text" size="15">
+        总运单号：<input id="totalLogisticsNo" name="totalLogisticsNo" type="text" size="15">
         物流运单号：<input id="logisticsNo" name="logisticsNo" type="text" size="15">
         收货人：<input id="consignee" name="consignee" type="text" size="15">
         报文类型：<select name="customsType">
@@ -32,10 +34,13 @@
             <tr>
                 <th><input type="checkbox" onclick="sel(this)" /></th>
                 <th><a href="javascript:listTable.sort('order_sn', 'ASC'); ">订单编号{$sort_orderNo}</a></th>
+                <th><a href="javascript:listTable.sort('batchNumbers', 'ASC'); ">批次号</a>{$sort_batchNumbers}</th>
+                <!--<th><a href="javascript:listTable.sort('import_time', 'ASC'); ">导入时间</a>{$sort_import_time}</th>-->
                 <th><a href="javascript:listTable.sort('consignee', 'ASC'); ">收货人</a>{$sort_consignee}</th>
                 <th><a href="javascript:listTable.sort('order_amount', 'ASC'); ">订单金额</a>{$sort_charge}</th>
                 <th><a href="javascript:listTable.sort('goods_amount', 'ASC'); ">货值</a>{$sort_goodsValue}</th>
                 <th><a href="javascript:listTable.sort('logisticsNo', 'ASC'); ">物流运单号</a>{$sort_logisticsNo}</th>
+                <th><a href="javascript:listTable.sort('totalLogisticsNo', 'ASC'); ">总运单号</a>{$sort_totalLogisticsNo}</th>
                 <th><a href="javascript:listTable.sort('paymentNo', 'ASC'); ">支付单号</a>{$sort_paymentNo}</th>
                 <th><a href="javascript:listTable.sort('order_status', 'ASC'); ">订单状态</a></th>
                 <th><a href="javascript:listTable.sort('order_comments', 'ASC'); ">订单原因</a></th>
@@ -51,17 +56,20 @@
             <tr>
                 <td align="center"><input type="checkbox" name="order[]" value="{$n.id}" /></td>
                 <td align="center">{$n.order_sn}</td>
+                <td align="center">{$n.batchNumbers}</td>
+                <!--<td align="center">{$n.import_time}</td>-->
                 <td align="center">{$n.consignee}</td>
                 <td align="right">￥{$n.order_amount}</td>
                 <td align="right">￥{$n.goods_amount}</td>
                 <td align="center">{$n.logisticsNo}</td>
+                <td align="center">{$n.totalLogisticsNo}</td>
                 <td align="center">{$n.paymentNo}</td>
                 <td align="center">{$n.order_status}</td>
                 <td align="center">{$n.order_comments}</td>
-                <td align="center"><a href="../data/customs/airport/send/order/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
+                <td align="center"><a href="/data/customs/airport/send/order/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
                 <td align="center">{$n.pay_number_status}</td>
                 <td align="center">{$n.pay_comments}</td>
-                <td align="center"><a href="../data/customs/airport/{$n.order_sn}_pay.xml">支付报文</a></td>
+                <td align="center"><a href="/data/customs/airport/{$n.order_sn}_pay.xml">支付报文</a></td>
                 <td align="center">{$n.transfer_status}</td>
                 <td align="center">{$n.transfer_comments}</td>
                 <td align="center">
@@ -148,6 +156,7 @@
     function searchCustoms() {
     listTable.filter['orderNo'] = Utils.trim(document.forms['searchForm'].elements['orderNo'].value);
             listTable.filter['consignee'] = Utils.trim(document.forms['searchForm'].elements['consignee'].value);
+            listTable.filter['batchNumbers'] = Utils.trim(document.forms['searchForm'].elements['batchNumbers'].value);
             listTable.filter['logisticsNo'] = Utils.trim(document.forms['searchForm'].elements['logisticsNo'].value);
             listTable.filter['customsType'] = document.forms['searchForm'].elements['customsType'].value;
             listTable.filter['customs_status'] = document.forms['searchForm'].elements['customs_status'].value;
