@@ -16,7 +16,6 @@
             <option value="order">订单</option>
             <option value="pay">支付单</option>
             <option value="EMS">EMS运单</option>
-            <!--<option value="shipping">运单</option>-->
         </select>
         报文状态：<select name="customs_status">
             <option value="">请选择</option>
@@ -69,7 +68,7 @@
                 <td align="center"><a href="/data/customs/airport/send/order/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
                 <td align="center">{$n.pay_number_status}</td>
                 <td align="center">{$n.pay_comments}</td>
-                <td align="center"><a href="/data/customs/airport/{$n.order_sn}_pay.xml">支付报文</a></td>
+                <td align="center"><a href="/data/customs/airport/send/pay/{$n.order_sn}.xml">支付报文</a></td>
                 <td align="center">{$n.transfer_status}</td>
                 <td align="center">{$n.transfer_comments}</td>
                 <td align="center">

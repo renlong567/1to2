@@ -288,7 +288,7 @@ elseif ($_REQUEST['act'] == 'customsAction')
         {
             messageGoBackJS('删除订单失败...');
         }
-        messageGoBackJS('删除成功');
+        messageGoBackJS('删除成功','custom_list.php?act=list');
     }
 }
 /**

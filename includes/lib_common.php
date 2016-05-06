@@ -2804,4 +2804,18 @@ function getOriginCountry()
     $origin_country = $GLOBALS['db']->getAll($sql);
     return $origin_country;
 }
+
+/**
+ * @desc 返回上一页（JS效果）
+ * @author RenLong
+ * @date 2015-12-19
+ * @param string $msg
+ * @param string $url
+ */
+function messageGoBackJS($msg = '', $url = '')
+{
+    $url = empty($url) ? 'history.go(-1);' : 'window.location.href="' . $url . '"';
+    echo '<script language=javascript>alert("' . $msg . '");' . $url . '</script>';
+    exit();
+}
 ?>
