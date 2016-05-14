@@ -221,6 +221,7 @@ elseif ($_REQUEST['act'] == 'customsAction')
             $airportOrder->GOODSVALUE = $order['goods_amount'];
             $airportOrder->ORDERID = $order['order_sn'];
             $airportOrder->ORDERSUM = $order['order_amount'];
+            $airportOrder->VAT = $order['taxfee'];
             $airportOrder->SUBMITTIME = $order['order_addtime'];
             $airportOrder->WEIGHT = $order['weight'];
             $airportOrder->COUNTOFGOODSTYPE = $order['COUNTOFGOODSTYPE'];
