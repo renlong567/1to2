@@ -44,9 +44,11 @@
                 <th><a href="javascript:listTable.sort('order_status', 'ASC'); ">订单状态</a></th>
                 <th><a href="javascript:listTable.sort('order_comments', 'ASC'); ">订单原因</a></th>
                 <th>订单报文</th>
+                <th>订单回执</th>
                 <th><a href="javascript:listTable.sort('pay_number_status', 'ASC'); ">支付单状态</a></th>
                 <th><a href="javascript:listTable.sort('pay_comments', 'ASC'); ">支付单原因</a></th>
                 <th>支付单报文</th>
+                <th>支付单回执</th>
                 <th><a href="javascript:listTable.sort('transfer_status', 'ASC'); ">EMS运单状态</a></th>
                 <th><a href="javascript:listTable.sort('transfer_comments', 'ASC'); ">EMS运单原因</a></th>
                 <th>{$lang.handler}</th>
@@ -65,10 +67,12 @@
                 <td align="center">{$n.paymentNo}</td>
                 <td align="center">{$n.order_status}</td>
                 <td align="center">{$n.order_comments}</td>
-                <td align="center"><a href="/data/customs/airport/send/order/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
+                <td align="center"><a href="/data/customs/airport/send/order/{$n.batchNumbers}/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
+                <td align="center"><a href="/data/customs/airport/receive/order/{$n.batchNumbers}/{$n.order_sn}.xml" target="_blank">{$n.order_sn}回执</a></td>
                 <td align="center">{$n.pay_number_status}</td>
                 <td align="center">{$n.pay_comments}</td>
-                <td align="center"><a href="/data/customs/airport/send/pay/{$n.order_sn}.xml">支付报文</a></td>
+                <td align="center"><a href="/data/customs/airport/send/pay/{$n.order_sn}.xml" target="_blank">支付报文</a></td>
+                <td align="center"><a href="/data/customs/airport/receive/pay/{$n.order_sn}.xml" target="_blank">支付回执</a></td>
                 <td align="center">{$n.transfer_status}</td>
                 <td align="center">{$n.transfer_comments}</td>
                 <td align="center">

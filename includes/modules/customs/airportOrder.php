@@ -16,6 +16,7 @@ class airportOrder extends customsCore
 {
 
     public $orderId = 0;
+    public $batchNumbers = '';
     public $ITEMNO = '';
     public $CBECODE = '';
     public $CBENAME = '';
@@ -115,13 +116,72 @@ class airportOrder extends customsCore
     {
         $message = $this->getCode();
 
-        $this->createXml($this->ORDERID, $message);
+        $batchNumber_path = empty($this->batchNumbers) ? '' : '/' . $this->batchNumbers;
+
+        $this->createXml($this->ORDERID, $message, 'order' . $batchNumber_path);
 
         $data = array('xmlStr' => $message);
 //        header('Content-type:text/xml');
 //        print_r($message);
 //        exit;
-        return $this->sendToServer($data, 'payParse');
+        $result = $this->sendToServer($data, 'payParse');
+
+        return $this->revice($result);
+    }
+
+    /**
+     * @desc 处理服务器返回信息
+     * @author RenLong
+     * @date 2015-12-10
+     * @param xml $result
+     * @return boolean
+     */
+    private function revice($result = '')
+    {
+        $result_xml = $result->return;
+        $data = simplexml_load_string($result_xml);
+
+        if (!empty($data))
+        {
+            if (!empty($data->MESSAGEBODY->BODYMASTER->NUMBER))
+            {
+                $orderSn = $data->MESSAGEBODY->BODYMASTER->NUMBER;
+                $batchNumber_path = empty($this->batchNumbers) ? '' : '/' . $this->batchNumbers;
+                $this->createXml($orderSn, $result_xml, 'order' . $batchNumber_path, 'receive');
+                $where = 'order_sn=\'' . mysql_real_escape_string($orderSn) . '\'';
+                $key = array(
+                    'order_status', 'order_comments'
+                );
+            }
+            else
+            {
+                return 'unknown error';
+            }
+
+            $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS['ecs']->table('airport_order') . ' WHERE ' . $where;
+            $id = $GLOBALS['db']->getOne($sql);
+
+            if ($id)
+            {
+                $data = array(
+                    $key[0] => $data->MESSAGEBODY->BODYMASTER->FLAG == 'SUCCESS' ? 1 : 0,
+                    $key[1] => mysql_real_escape_string($data->MESSAGEBODY->BODYMASTER->COMMENTS)
+                );
+
+                if ($GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('airport_order'), $data, 'UPDATE', $where))
+                {
+                    return 'success';
+                }
+                else
+                {
+                    return 'fail';
+                }
+            }
+            else
+            {
+                return 'notexist';
+            }
+        }
     }
 
     private function getCode()
@@ -131,18 +191,18 @@ class airportOrder extends customsCore
         //综保区测试数据
         if (true)
         {
-            $this->PAYENTERPRISECODE = 'P461263355';
-            $this->PAYENTERPRISENAME = '美华有限公司';
-            $this->ECPCODE = $this->TAXEDENTERPRISE = 'W461287621';
-            $this->ECPNAME = '美华有限公司';
-            $this->CBECODE = 'D461241432';
-            $this->CBENAME = '美华有限公司';
-            $this->CBECODEINSP = '5122343433';
-            $this->ECPCODEINSP = '5122343433';
-            $this->ITEMNO = 'D461241432LLQY001997';
+            $this->PAYENTERPRISECODE = 'P461263461';
+            $this->PAYENTERPRISENAME = '测试支付企业';
+            $this->ECPCODE = $this->TAXEDENTERPRISE = 'W461224549';
+            $this->ECPNAME = '测试电商企业';
+            $this->CBECODE = 'D461288464';
+            $this->CBENAME = '测试电商企业';
+            $this->CBECODEINSP = '3697899510';
+            $this->ECPCODEINSP = '3697899510';
+            $this->ITEMNO = 'D461274638AH14525';
             $this->LMSNO = 'S4612I696715';
-            $this->DECLCODE = '6546646456';
-            $this->DECLNAME = '美华报关';
+            $this->DECLCODE = '4101983536';
+            $this->DECLNAME = '测试报关';
         }
 
         $MESSAGEHEAD = <<<ETO
@@ -225,11 +285,15 @@ ETO;
         foreach ($goods as $value)
         {
             $goods_netweight = $value['goods_number'] * $value['netweight'];
-
+            if(true)
+            {
+                $value['goodidinsp'] = '5120124001AH14525';
+            }
+//            $this->CBECODE{$value['goods_sn']}
             $MESSAGEBODY .= <<<ETO
                 <ORDERLIST>
                     <GNO>{$value['GNO']}</GNO>
-                    <ITEMNO>$this->CBECODE{$value['goods_sn']}</ITEMNO>
+                    <ITEMNO>$this->ITEMNO</ITEMNO>
                     <SHELFGOODSNAME>{$value['goods_name']}</SHELFGOODSNAME>
                     <DESCRIBE></DESCRIBE>
                     <GOODID>{$value['goods_name']}</GOODID>

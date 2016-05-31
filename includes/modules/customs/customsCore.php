@@ -85,12 +85,18 @@ class customsCore
      * @desc 写入xml
      * @author RenLong
      * @date 2015-10-29
-     * @param type $orderSn
-     * @param type $data
+     * @param string $orderSn
+     * @param string $data
+     * @param string $type
+     * @param string $path
      */
-    protected function createXml($orderSn, $data, $type = 'order')
+    protected function createXml($orderSn, $data, $type = 'order', $path = 'send')
     {
-        file_put_contents(ROOT_PATH . 'data/customs/airport/send/' . $type . '/' . $orderSn . '.xml', $data);
+        if (!file_exists(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type))
+        {
+            mkdir(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type);
+        }
+        file_put_contents(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type . '/' . $orderSn . '.xml', $data);
     }
 
     /**

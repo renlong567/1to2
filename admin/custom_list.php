@@ -195,7 +195,6 @@ elseif ($_REQUEST['act'] == 'customsAction')
 //                    $airportOrder->TRADECOMPANY = JIHUO_TRADING_COUNTRY_CODE_CIQ;
 //                    $airportOrder->COLLUSERCOUNTRYINSP = JIHUO_SEND_COUNTRY_CODE_CIQ;
                     break;
-                default:
                 case CUSTOMS_MODE_BEIHUO:
 //                    $airportOrder->SENDERUSERCOUNTRY = BEIHUO_SEND_COUNTRY_CODE_CUS;
 //                    $airportOrder->SENDERUSERNAME = BEIHUO_SEND_NAME;
@@ -208,6 +207,7 @@ elseif ($_REQUEST['act'] == 'customsAction')
 
             $airportOrder->time = $time;
             $airportOrder->orderId = $v;
+            $airportOrder->batchNumbers = $order['batchNumbers'];
             $airportOrder->CUSTOMERID = $order['consignee_idc'];
             $airportOrder->NETWEIGHT = $order['netweight'];
             $airportOrder->PAYNUMBER = $order['paymentNo'];
