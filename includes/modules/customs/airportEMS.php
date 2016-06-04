@@ -15,6 +15,7 @@ require_once ROOT_PATH . 'includes/modules/customs/customsCore.php';
 
 class airportEMS extends customsCore
 {
+
     //电子运单报文头<Head>
     public $MessageID = ''; //   报文编号    VARCHAR2(30)    非空  每份报文唯一的编号，规则：报文类型+当前系统时间（YYYYMMDDHHMMSS）+4位序号
     public $MessageType = 200200;   // 报文类型    VARCHAR2(6) 非空  运单报文类型； 200200
@@ -83,8 +84,8 @@ class airportEMS extends customsCore
 
     public function __construct($_CFG)
     {
-        $wsdlUrl = 'http://219.134.187.38:7002/zz_xzjcApiServer/LoadDataPortService?wsdl';   //测试
-        $location = 'http://219.134.187.38:7002/zz_xzjcApiServer/LoadDataPortService';   //测试
+        $wsdlUrl = 'http://58.250.173.167:9020/zz_xzjcApiServer/LoadDataPortService?wsdl';   //测试
+        $location = 'http://58.250.173.167:9020/zz_xzjcApiServer/LoadDataPortService';   //测试
 //        $wsdlUrl = 'http://211.156.193.152:8080/zz_xzjcApiServer/LoadDataPortService?wsdl';   //正式
 //        $location = 'http://211.156.193.152:8080/zz_xzjcApiServer/LoadDataPortService';   //正式
 
@@ -126,12 +127,13 @@ class airportEMS extends customsCore
         //提交报文
         $data = array('parameters' => $message);
         $result = $this->sendToServer($data, 'GetWaybillInfo', false);
-
+        //保存报文XML
+        $this->createXml($this->time, $message, 'EMS');
+        //保存回执XML
+        $this->createXml($this->time, $result, 'EMS', 'receive');
         //处理结果
         if ($this->revice($result))
         {
-            //保存XML
-            $this->createXml($this->time, $message, 'EMS');
             return true;
         }
         else

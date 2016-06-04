@@ -83,9 +83,11 @@ class airportOrder extends customsCore
 
     public function __construct($_CFG)
     {
-        $this->Url = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs?wsdl';   //测试
-        $this->location = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs';   //测试
-        
+//        $this->Url = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs?wsdl';   //测试
+//        $this->location = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs';   //测试
+        $this->Url = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs?wsdl';   //正式
+        $this->location = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs';   //正式
+
         $this->CBECODE = $_CFG['cus_cbecode'];
         $this->CBENAME = $_CFG['cus_cbename'];
         $this->ECPCODE = $_CFG['cus_ecpcode'];
@@ -189,7 +191,7 @@ class airportOrder extends customsCore
         $goods = $this->getGoodsByOrderId();
 
         //综保区测试数据
-        if (true)
+        if (false)
         {
             $this->PAYENTERPRISECODE = 'P461263461';
             $this->PAYENTERPRISENAME = '测试支付企业';
@@ -285,11 +287,11 @@ ETO;
         foreach ($goods as $value)
         {
             $goods_netweight = $value['goods_number'] * $value['netweight'];
-            if(true)
+            if (false)
             {
                 $value['goodidinsp'] = '5120124001AH14525';
             }
-//            $this->CBECODE{$value['goods_sn']}
+            $value['goodidinsp'] = $this->CBECODE{$value['goods_sn']};
             $MESSAGEBODY .= <<<ETO
                 <ORDERLIST>
                     <GNO>{$value['GNO']}</GNO>
