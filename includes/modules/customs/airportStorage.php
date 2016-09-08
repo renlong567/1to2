@@ -48,7 +48,7 @@ class airportStorage extends customsCore
     public $C_Address1 = '';       //收货人所在地址 C_Address1 VarChar(200) 200   是
     public $Remark = '';   //备注信息 Remark VarChar(800) 800     
     public $InvoicePrintFlag = ''; //是否需要发票 InvoicePrintFlag bit     是
-    public $DeliverCode = '';      //快递公司编号 DeliverCode VarChar(20) 20   是
+    public $DeliverCode = 'ZTO';      //快递公司编号 DeliverCode VarChar(20) 20   是
     /* 订单明细信息 */
     public $GoodsID = '';   //单品ID GoodsID VarChar(20) 20   是
     public $ItemNO = '';   //海关备案编号 ItemNO VarChar(100) 100     
@@ -187,12 +187,7 @@ class airportStorage extends customsCore
         $goods = $this->getGoodsByOrderId();
 
         $MESSAGEHEAD = <<<ETO
-            <MESSAGEID>e2e175ce-6534-4b1a-b350-29fc79fe1249</MESSAGEID>
-            <MESSAGETYPE>IEPT302</MESSAGETYPE>
-            <SENDERID>1102013201</SENDERID>
-            <RECEIVERID>0100</RECEIVERID>
-            <SENDTIME>$this->time</SENDTIME>
-            <SEQNO>14202004944</SEQNO>
+<AppSecret>$this->apps</AppSecret><ActionID>1</ActionID><Timestamp>2015-12-21 09:33:59</Timestamp> 
 ETO;
         /* 数组赋值  2015-6-25  WangMin editer:RenLong 2015-09-14 */
         $MESSAGEBODY = <<<ETO
