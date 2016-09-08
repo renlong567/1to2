@@ -12,10 +12,9 @@ if (!defined('IN_ECS'))
 
 /**
  * @desc 取得机场订单信息
- * @author WangMin
+ * @author RenLong
  * @date 2015-06-25
- *
- * @return array
+ * @return []
  */
 function get_airport_info($orderId)
 {
@@ -26,14 +25,21 @@ function get_airport_info($orderId)
             . 'o.order_id,'
             . 'o.user_id,'
             . 'o.idtype,'
+            . 'a.region_name as province,'
+            . 'b.region_name as city,'
+            . 'c.region_name as district,'
             . 'SUM(g.goods_weight*og.goods_number) as weight,'
             . 'COUNT(*) as COUNTOFGOODSTYPE '
             . 'FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ao '
             . 'INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ao.order_sn=o.order_sn '
+            . 'INNER JOIN ' . $GLOBALS['ecs']->table('users') . ' u ON o.user_id=u.user_id '
+            . 'INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' a ON o.province=a.region_id '
+            . 'INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' b ON o.city=b.region_id '
+            . 'INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' c ON o.district=c.region_id '
             . 'INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON o.order_id=og.order_id '
             . 'INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON g.goods_id=og.goods_id '
             . 'WHERE ao.id= ' . $orderId
-            .' GROUP BY ao.order_sn';
+            . ' GROUP BY ao.order_sn';
 
     $orderInfo = $GLOBALS['db']->getRow($sql);
 

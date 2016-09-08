@@ -281,6 +281,55 @@ elseif ($_REQUEST['act'] == 'customsAction')
 
         sys_msg('提交完成，请返回刷新查看结果');
     }
+    //仓储企业接口
+    if ($_POST['operate'] == 'o3')
+    {
+        require_once ROOT_PATH . 'includes/modules/customs/airportStorage.php';
+        $airportStorage = new airportStorage($_CFG);
+
+        foreach ($_POST['order'] as $v)
+        {
+            $order = get_airport_info($v);
+
+            switch ($billmode)
+            {
+                case CUSTOMS_MODE_JIHUO:
+//                    $airportStorage->SENDERUSERCOUNTRY = JIHUO_SEND_COUNTRY_CODE_CUS;
+//                    $airportStorage->SENDERUSERNAME = JIHUO_SEND_NAME;
+//                    $airportStorage->SENDERUSERADDRESS = JIHUO_SEND_ADDRESS;
+//                    $airportStorage->SENDERUSERTELEPHONE = JIHUO_SEND_MOBILE;
+//                    $airportStorage->TRADECOMPANY = JIHUO_TRADING_COUNTRY_CODE_CIQ;
+//                    $airportStorage->COLLUSERCOUNTRYINSP = JIHUO_SEND_COUNTRY_CODE_CIQ;
+                    break;
+                case CUSTOMS_MODE_BEIHUO:
+//                    $airportStorage->SENDERUSERCOUNTRY = BEIHUO_SEND_COUNTRY_CODE_CUS;
+//                    $airportStorage->SENDERUSERNAME = BEIHUO_SEND_NAME;
+//                    $airportStorage->SENDERUSERADDRESS = BEIHUO_SEND_ADDRESS;
+//                    $airportStorage->SENDERUSERTELEPHONE = BEIHUO_SEND_MOBILE;
+//                    $airportStorage->TRADECOMPANY = BEIHUO_TRADING_COUNTRY_CODE_CIQ;
+//                    $airportStorage->COLLUSERCOUNTRYINSP = BEIHUO_SEND_COUNTRY_CODE_CIQ;
+                    break;
+            }
+            
+            $airportStorage->PlatformOrderNO = $order['order_sn'];
+            $airportStorage->OrderTime = $order['order_addtime'];
+            $airportStorage->PayTime = $order['pay_time'];
+            $airportStorage->Totoal = $order['order_amount'];
+            $airportStorage->IDType = $order['idtype'];
+            $airportStorage->IDNO = $order['consignee_idc'];
+            $airportStorage->ConsigneeCountry = $order['country'];
+            $airportStorage->ConsigneeName = $order['consignee'];
+            $airportStorage->C_Province = $order['province'];
+            $airportStorage->C_City = $order['city'];
+            $airportStorage->C_Tel1 = $order['mobile'];
+            $airportStorage->C_Zone = $order['district'];
+            $airportStorage->C_Address1 = $order['address'];
+            
+            $airportStorage->send();
+        }
+
+        sys_msg('提交完成，请返回刷新查看结果');
+    }
     if ($_POST['operate'] == 'batch_del')
     {
         $sql = 'DELETE FROM ' . $GLOBALS['ecs']->table('airport_order') . ' WHERE ' . db_create_in($_POST['order'], 'id');
