@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @desc 小马过河仓储接口
+ * @desc 进出口订单信息类属性定义
  * @author RenLong
- * @date 2016-09-08
+ * @date 2016-05-04
  */
 if (!defined('IN_ECS'))
 {
@@ -12,90 +12,93 @@ if (!defined('IN_ECS'))
 
 require_once ROOT_PATH . 'includes/modules/customs/customsCore.php';
 
-class airportStorage extends customsCore
+class airportOrder extends customsCore
 {
 
     public $orderId = 0;
-    /* 系统参数说明 */
-    public $SenderID = 1;  //客户编号 SenderID Int  必填    客户与公司正式签订合约后分配编号，测试时可使用默认编号 1。
-    public $AppToken = '1234567890'; //AppToken 号 AppToken String  必填   客户与公司正式签订合约后分配，测试时可使用默认值 1234567890。
-    public $AppKey = '1234567890';   //AppKey AppKey String  必填  客户与公司正式签订合约后分配，测试时可使用默认值 1234567890。
-    public $Sign = '';     //验签值 Sign String  必填
-    public $ActionID = 0; //动作编号 ActionID Int  必填 仅可取值为 0 或 1(1:新增 -1:取消)。
-    public $Timestamp = '';        //时间戳 Timestamp DateTime  必填  当前时间(系统将对该时间与服务器时间进行比对，误差不得超过 5 分钟。
-    /* 订单信息 */
-    public $ECPCode = '';   //电商平台代码 ECPCode VarChar(20) 20   是
-    public $ECPName = '';  //电商平台名称 ECPName VarChar(50) 50   是
-    public $ECPCodeINSP = '';      //电商平台代码(检) ECPCodeINSP VarChar(20) 20   是
-    public $ECPNameINSP = '';      //电商平台名称(检) ECPNameINSP VarChar(50) 50   是
-    public $CBECode = '';  //电商企业代码 CBECode VarChar(20) 20   是
-    public $CBEName = '';  //电商企业名称 CBEName VarChar(50) 50   是
-    public $ShopID = 12;   //店铺编号 ShopID int     是
-    public $PlatformOrderNO = '';  //订单编号(平台) PlatformOrderNO VarChar(30) 30   是
-    public $OrderTime = '';        //订单创建时间 OrderTime datetime       
-    public $PayTime = '';  //支付时间 PayTime datetime       
-    public $Totoal = '';   //订单总金额 Totoal Decimal(10,2) 10 2 是
-    public $IDType = '';   //证件类型 IDType VarChar(10) 10   是
-    public $IDNO = '';     //证件号码 IDNO VarChar(30) 30   是
-    public $ConsigneeCountry = ''; //收货人所在国 ConsigneeCountry VarChar(50) 50     
-    public $ConsigneeName = '';    //收货人名称 ConsigneeName varchar(200) 200   是
-    public $C_Province = '';       //收货人所在省 C_Province VarChar(50) 50   是
-    public $C_City = '';   //收货人所在市 C_City VarChar(50) 50   是
-    public $C_Tel1 = '';   //收货人手机号 C_Tel1 VarChar(50) 50     
-    public $C_Tel2 = '';   //收货人固话 C_Tel2 VarChar(50) 50     
-    public $C_Zone = '';        //收货人所在区/县 C_Zone VarChar(50) 50   是
-    public $C_ZIP = '';    //收货人邮编 C_ZIP VarChar(50) 50     
-    public $C_Address1 = '';       //收货人所在地址 C_Address1 VarChar(200) 200   是
-    public $Remark = '';   //备注信息 Remark VarChar(800) 800     
-    public $InvoicePrintFlag = 'False'; //是否需要发票 InvoicePrintFlag bit     是
-    public $DeliverCode = 'ZTO';      //快递公司编号 DeliverCode VarChar(20) 20   是
-    /* 订单明细信息 */
-    public $GoodsID = '';   //单品ID GoodsID VarChar(20) 20   是
-    public $ItemNO = '';   //海关备案编号 ItemNO VarChar(100) 100     
-    public $GoodsName = '';        //单品名称 GoodsName VarChar(50) 50     
-    public $Amount = '';    //成交数量 Amount int     是
-    public $GoodsPrice = '';       //成交单价 GoodsPrice Decimal(10,2) 10 2 是
-    public $OrderSum = ''; //成交总价 OrderSum Decimal(10,2) 10 2 是
-    public $ChangeFlag = 'False';       //是否退换货 ChangeFlag bit     是
-    public $GilfFlag = 'False'; //是否赠品 GilfFlag bit     是
-    /* 发票信息 */
-//    public $Title = '';     //发票抬头 Title VarChar(20) 20   是
-//    public $Reference1 = '';       //电商平台的发票串号 Reference1 VarChar(50) 50   是
-//    public $SKU = '';      //产品名称 SKU VarChar(50) 50   是
-//    public $UOM = '';      //单位 UOM VarChar(10) 10   是
-//    public $QTY = '';      //数量 QTY Decimal(18,8) 18 8 是
-//    public $UnitPrice = '';        //单价 UnitPrice Decimal(18,8) 18 8 是
-//    public $Amount = '';   //小计 Amount Decimal(18,8) 18 8   
-//    public $TaxRate = '';  //税率 TaxRate Decimal(18,8) 18 8   
-//    public $TaxAmount = '';        //税额 TaxAmount Decimal(18,8) 18 8   
-//    public $SKUDescr = ''; //发票产品名称 SKUDescr VarChar(100) 100     
-//    public $DetalTitle = '';       //发票型号 DetalTitle VarChar(100) 100     
-//    public $Notes = '';    //备注 Notes VarChar(500) 500     
-//    public $UserDefine1 = '';      //自定义1 UserDefine1 VarChar(200) 200     
-//    public $UserDefine2 = '';      //自定义2 UserDefine2 VarChar(200) 200     
-//    public $UserDefine3 = '';      //自定义3 UserDefine3 VarChar(200) 200     
-//    public $UserDefine4 = '';      //自定义4 UserDefine4 VarChar(200) 200     
-//    public $UserDefine5 = '';      //自定义5 UserDefine5 VarChar(200) 200 
+    public $batchNumbers = '';
+    public $ITEMNO = '';
+    public $CBECODE = '';
+    public $CBENAME = '';
+    public $ECPCODE = '';
+    public $ECPNAME = '';
+    public $PURCHASERNAME = ''; //订购人名称
+    public $BUYER_REG_NO = '';  //订购人注册号
+    public $PURCHASERTELEPHONE = '';   //订购人电话
+    public $COLLECTIONUSERADDRESS = '';
+    public $COLLECTIONUSERNAME = '';
+    public $COLLECTIONUSERTELEPHONE = '';
+    public $GOODSVALUE = 0;
+    public $ORDERID = '';
+    public $ORDERSUM = 0;
+    public $CONSUMPTIONTAX = '';
+    public $VAT = '';
+    public $FREIGHT = '';
+    public $OTHERFEE = '';
+    public $REMARK = '';
+    public $SENDERUSERCOUNTRY = '';
+    public $SENDERUSERNAME = '';
+    public $SENDERUSERADDRESS = '';
+    public $SENDERUSERTELEPHONE = '';
+    public $IDTYPE = '';    //订购人证件类型
+    public $CUSTOMERID = '';    //订购人证件号码
+    public $IETYPE = 'I';
+    public $MODIFYMARK = '';
+    public $BILLMODE = '';   //模式代码 1： 一般模式(集货) 2： 保税模式(备货)
+    public $WASTERORNOT = 'N';
+    public $BOTANYORNOT = 'N';
+    public $TAXEDENTERPRISE = '';
+    public $CBECODEINSP = '';
+    public $ECPCODEINSP = '';
+    public $TREPCODEINSP = '';
+    public $SUBMITTIME = '';
+    public $TRADECOMPANY = ''; //检验检疫-贸易国别-澳大利亚
+    public $TOTALFEEUNIT = '';
+    public $COUNTOFGOODSTYPE = '';
+    public $WEIGHT = 0;
+    public $WEIGHTUNIT = '035';
+    public $NETWEIGHT = 0;
+    public $NETWEIGHTUNIT = '035';
+    public $PLATFORMURL = '';
+    public $COLLUSERCOUNTRYINSP = '';
+    public $SENDUSERCOUNTRYINSP = '';
+    public $PAYNUMBER = '';
+    public $PAYENTERPRISECODE = '';
+    public $PAYENTERPRISENAME = '';
+    public $OTHERPAYMENT = 0;
+    public $OTHERPAYMENTTYPE = '';
+    public $LMSNO = ''; //S账册编号
+    public $MANUALNO = ''; //H账册编号
+    public $LICENSE_NO = ''; //  许可证号    非必填 50  字符  出口必填
+    public $DECLCODE = ''; // 郑州市程驰速递有限公司  报关企业海关备案编码  必填  20  字符
+    public $DECLARETYPE = '';
+    public $DECLNAME = '';
+    public $DEPOSITORGUARANTEE = 0; //保金保函类型 进口必填 保金保函类型【0-担保金，1-保函】 一般进口模式只能填写0；保税模式可以选择填写 0 或 1，出口为非必填
+    public $GUARANTEENO = '';
+    public $EXTENDFIELD1 = '';
+    public $EXTENDFIELD2 = '';
+    public $EXTENDFIELD3 = '';
+    public $EXTENDFIELD4 = '';
+    public $EXTENDFIELD5 = '';
 
     public function __construct($_CFG)
     {
-        $this->Url = 'http://wms1.chinapony.cn:88/ws/wsorder.asmx?WSDL';   //测试
-        $this->location = 'http://wms1.chinapony.cn:88/ws/wsorder.asmx';   //测试
-//        $this->Url = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs?wsdl';   //正式
-//        $this->location = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs';   //正式
+//        $this->Url = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs?wsdl';   //测试
+//        $this->location = 'http://171.12.5.86:83/DataInteractonWbs/webservice/wbs';   //测试
+        $this->Url = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs?wsdl';   //正式
+        $this->location = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs';   //正式
 
-        $this->CBECode = $_CFG['cus_cbecode'];
-        $this->CBEName = $_CFG['cus_cbename'];
-        $this->ECPCode = $_CFG['cus_ecpcode'];
-        $this->ECPName = $_CFG['cus_ecpname'];
-        $this->ECPNameINSP = $_CFG['cus_ecpname'];
+        $this->CBECODE = $_CFG['cus_cbecode'];
+        $this->CBENAME = $_CFG['cus_cbename'];
+        $this->ECPCODE = $_CFG['cus_ecpcode'];
+        $this->ECPNAME = $_CFG['cus_ecpname'];
         $this->TAXEDENTERPRISE = $_CFG['cus_taxedenterprise'];
         $this->CBECODEINSP = $_CFG['cus_cbecodeinsp'];
         $this->SENDERUSERCOUNTRY = $_CFG['cus_senderusercountry'];
         $this->SENDERUSERNAME = $_CFG['cus_senderusername'];
         $this->SENDERUSERADDRESS = $_CFG['cus_senderuseraddress'];
         $this->SENDERUSERTELEPHONE = $_CFG['cus_senderusertelephone'];
-        $this->ECPCodeINSP = $_CFG['cus_ecpcodeinsp'];
+        $this->ECPCODEINSP = $_CFG['cus_ecpcodeinsp'];
         $this->TREPCODEINSP = $_CFG['cus_trepcodeinsp'];
         $this->TRADECOMPANY = $_CFG['cus_tradecompany'];
         $this->TOTALFEEUNIT = $_CFG['cus_totalfeeunit'];
@@ -117,13 +120,13 @@ class airportStorage extends customsCore
 
         $batchNumber_path = empty($this->batchNumbers) ? '' : '/' . $this->batchNumbers;
 
-        $this->createXml($this->ORDERID, $message, 'st' . $batchNumber_path);
+        $this->createXml($this->ORDERID, $message, 'order' . $batchNumber_path);
 
         $data = array('xmlStr' => $message);
 //        header('Content-type:text/xml');
 //        print_r($message);
 //        exit;
-        $result = $this->sendToServer($data, 'Recive');
+        $result = $this->sendToServer($data, 'payParse');
 
         return $this->revice($result);
     }
@@ -149,7 +152,7 @@ class airportStorage extends customsCore
                 $this->createXml($orderSn, $result_xml, 'order' . $batchNumber_path, 'receive');
                 $where = 'order_sn=\'' . mysql_real_escape_string($orderSn) . '\'';
                 $key = array(
-                    'st_status', 'st_comments'
+                    'order_status', 'order_comments'
                 );
             }
             else
@@ -187,6 +190,31 @@ class airportStorage extends customsCore
     {
         $goods = $this->getGoodsByOrderId();
 
+        //综保区测试数据
+        if (false)
+        {
+            $this->PAYENTERPRISECODE = 'P461263461';
+            $this->PAYENTERPRISENAME = '测试支付企业';
+            $this->ECPCODE = $this->TAXEDENTERPRISE = 'W461224549';
+            $this->ECPNAME = '测试电商企业';
+            $this->CBECODE = 'D461288464';
+            $this->CBENAME = '测试电商企业';
+            $this->CBECODEINSP = '3697899510';
+            $this->ECPCODEINSP = '3697899510';
+            $this->ITEMNO = 'D461274638AH14525';
+            $this->LMSNO = 'S4612I696715';
+            $this->DECLCODE = '4101983536';
+            $this->DECLNAME = '测试报关';
+        }
+
+        $MESSAGEHEAD = <<<ETO
+            <MESSAGEID>e2e175ce-6534-4b1a-b350-29fc79fe1249</MESSAGEID>
+            <MESSAGETYPE>IEPT302</MESSAGETYPE>
+            <SENDERID>1102013201</SENDERID>
+            <RECEIVERID>0100</RECEIVERID>
+            <SENDTIME>$this->time</SENDTIME>
+            <SEQNO>14202004944</SEQNO>
+ETO;
         /* 数组赋值  2015-6-25  WangMin editer:RenLong 2015-09-14 */
         $MESSAGEBODY = <<<ETO
         <BODYMASTER>
@@ -309,11 +337,14 @@ ETO;
 
         $data = <<<ETO
 <?xml version="1.0" encoding="UTF-8" ?>
-
+    <CBECMESSAGE>
+        <MESSAGEHEAD>
+            $MESSAGEHEAD
+        </MESSAGEHEAD>
         <MESSAGEBODY>
             $MESSAGEBODY
         </MESSAGEBODY>
-        <Invoices></Invoices>
+    </CBECMESSAGE>
 ETO;
 
         return $data;

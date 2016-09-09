@@ -16,6 +16,7 @@
             <option value="order">订单</option>
             <option value="pay">支付单</option>
             <option value="EMS">EMS运单</option>
+            <option value="st">仓储</option>
         </select>
         报文状态：<select name="customs_status">
             <option value="">请选择</option>
@@ -51,6 +52,10 @@
                 <th>支付单回执</th>
                 <th><a href="javascript:listTable.sort('transfer_status', 'ASC'); ">EMS运单状态</a></th>
                 <th><a href="javascript:listTable.sort('transfer_comments', 'ASC'); ">EMS运单原因</a></th>
+                <th>仓储报文</th>
+                <th>仓储回执</th>
+                <th><a href="javascript:listTable.sort('st_status', 'ASC'); ">仓储状态</a></th>
+                <th><a href="javascript:listTable.sort('st_comments', 'ASC'); ">仓储原因</a></th>
                 <th>{$lang.handler}</th>
             </tr>
             {foreach from=$res item=n}
@@ -75,6 +80,10 @@
                 <td align="center"><a href="/data/customs/airport/receive/pay/{$n.order_sn}.xml" target="_blank">支付回执</a></td>
                 <td align="center">{$n.transfer_status}</td>
                 <td align="center">{$n.transfer_comments}</td>
+                <td align="center"><a href="/data/customs/airport/send/st/{$n.order_sn}.xml" target="_blank">仓储报文</a></td>
+                <td align="center"><a href="/data/customs/airport/receive/st/{$n.order_sn}.xml" target="_blank">仓储回执</a></td>
+                <td align="center">{$n.st_status}</td>
+                <td align="center">{$n.st_comments}</td>
                 <td align="center">
                     <a title="回收站" onclick="listTable.remove({$n.id}, '您确实要删除 {$n.order_sn} 吗？')" href="javascript:;">
                         <img width="16" height="16" border="0" src="images/icon_trash.gif"></a>
@@ -83,7 +92,7 @@
             {/foreach}
             <tr>
                 <td align="center"><input type="checkbox" onclick="sel(this)" /></td>
-                <td colspan="22" align="right">
+                <td colspan="23" align="right">
                     {include file="page.htm"}
                 </td>
             </tr>
@@ -95,6 +104,7 @@
             <option value="o2">申报订单</option>
             <option value="o6">申报支付单</option>
             <option value="o7">申报EMS(每次最多1000单)</option>
+            <option value="o3">申报仓储</option>
             <option value="batch_del">批量删除</option>
         </select>
         <select name="target">

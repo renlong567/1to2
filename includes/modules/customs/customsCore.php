@@ -89,14 +89,15 @@ class customsCore
      * @param string $data
      * @param string $type
      * @param string $path
+     * @param string $file_type
      */
-    protected function createXml($orderSn, $data, $type = 'order', $path = 'send')
+    protected function createXml($orderSn, $data, $type = 'order', $path = 'send', $file_type = 'xml')
     {
         if (!file_exists(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type))
         {
             mkdir(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type);
         }
-        file_put_contents(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type . '/' . $orderSn . '.xml', $data);
+        file_put_contents(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type . '/' . $orderSn . '.' . $file_type, $data);
     }
 
     /**

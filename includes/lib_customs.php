@@ -121,7 +121,7 @@ function airport_list()
                 case 'pay':
                     $filter['customsType'] = 'pay_number_status';
                     break;
-                case 'shentong':
+                case 'st':
                     $filter['customsType'] = 'st_status';
                     break;
                 case 'shipping':
