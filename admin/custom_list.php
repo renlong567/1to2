@@ -283,7 +283,8 @@ elseif ($_REQUEST['act'] == 'customsAction')
 //                    $airportStorage->COLLUSERCOUNTRYINSP = BEIHUO_SEND_COUNTRY_CODE_CIQ;
                     break;
             }
-            
+
+            $airportStorage->orderId = $v;
             $airportStorage->PlatformOrderNO = $order['order_sn'];
             $airportStorage->OrderTime = $order['order_addtime'];
             $airportStorage->PayTime = $order['pay_time'];

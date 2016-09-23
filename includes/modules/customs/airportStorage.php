@@ -58,7 +58,9 @@ class airportStorage extends customsCore
     public $OrderSum = ''; //成交总价 OrderSum Decimal(10,2) 10 2 是
     public $ChangeFlag = 'False';       //是否退换货 ChangeFlag bit     是
     public $GilfFlag = 'False'; //是否赠品 GilfFlag bit     是
+
     /* 发票信息 */
+
 //    public $Title = '';     //发票抬头 Title VarChar(20) 20   是
 //    public $Reference1 = '';       //电商平台的发票串号 Reference1 VarChar(50) 50   是
 //    public $SKU = '';      //产品名称 SKU VarChar(50) 50   是
@@ -83,6 +85,7 @@ class airportStorage extends customsCore
         $this->location = 'http://wms1.chinapony.cn:88/ws/wsorder.asmx';   //测试
 //        $this->Url = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs?wsdl';   //正式
 //        $this->location = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs';   //正式
+        $this->Timestamp = local_date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
 
         $this->CBECode = $_CFG['cus_cbecode'];
         $this->CBEName = $_CFG['cus_cbename'];
@@ -115,17 +118,115 @@ class airportStorage extends customsCore
     {
         $message = $this->getCode();
 
-        $batchNumber_path = empty($this->batchNumbers) ? '' : '/' . $this->batchNumbers;
+        $this->createXml($this->PlatformOrderNO, $message, 'st');
 
-        $this->createXml($this->ORDERID, $message, 'st' . $batchNumber_path);
-
-        $data = array('xmlStr' => $message);
+        $data = array('parameters' => $message);
 //        header('Content-type:text/xml');
 //        print_r($message);
 //        exit;
         $result = $this->sendToServer($data, 'Recive');
+        var_dump($result);
+        exit;
+//        return $this->revice($result);
+    }
 
-        return $this->revice($result);
+    private function getCode()
+    {
+        $goods = $this->getGoodsByOrderId();
+
+        $MESSAGEBODY = <<<ETO
+<Order>
+        <ECPCode>$this->ECPCode</ECPCode>
+        <ECPName>$this->ECPName</ECPName>
+        <ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>
+        <ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>
+        <CBECode>$this->CBECode</CBECode>
+        <CBEName>$this->CBEName</CBEName>
+        <ShopID>$this->ShopID</ShopID>
+        <PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>
+        <OrderTime>$this->OrderTime</OrderTime>
+        <PayTime>$this->PayTime</PayTime>
+        <Totoal>$this->Totoal</Totoal>
+        <IDType>$this->IDType</IDType>
+        <IDNO>$this->IDNO</IDNO>
+        <ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>
+        <ConsigneeName>$this->ConsigneeName</ConsigneeName>
+        <C_Province>$this->C_Province</C_Province>
+        <C_City>$this->C_City</C_City>
+        <C_Tel1>$this->C_Tel1</C_Tel1>
+        <C_Tel2>$this->C_Tel2</C_Tel2>
+        <C_Zone>$this->C_Zone</C_Zone>
+        <C_ZIP>$this->C_ZIP</C_ZIP>
+        <C_Address1>$this->C_Address1</C_Address1>
+        <Remark>$this->Remark</Remark>
+        <InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>
+        <DeliverCode>$this->DeliverCode</DeliverCode>
+    </Order>
+    <Details>
+ETO;
+        foreach ($goods as $value)
+        {
+            $MESSAGEBODY .= <<<ETO
+                <OrderDetail>
+                    <GoodsID>{$value['goods_sn']}</GoodsID>
+                    <ItemNO>{$value['itemno']}</ItemNO>
+                    <GoodsName>{$value['goodname']}</GoodsName>
+                    <Amount>{$value['goods_number']}</Amount>
+                    <GoodsPrice>{$value['goods_price']}</GoodsPrice>
+                    <OrderSum>{$value['OrderSum']}</OrderSum>
+                    <ChangeFlag>$this->ChangeFlag</ChangeFlag>
+                    <GilfFlag>$this->GilfFlag</GilfFlag>
+                </OrderDetail>
+ETO;
+        }
+        $MESSAGEBODY .= '</Details><Invoices></Invoices>';
+
+        $str = <<<ETO
+            <AppSecret>1234567890</AppSecret><ActionID>$this->ActionID</ActionID><Timestamp>$this->Timestamp</Timestamp>'
+ETO;
+        $str .= $MESSAGEBODY;
+        $this->Sign = strtoupper(base64_encode(md5($str)));
+
+        $data = <<<ETO
+<?xml version="1.0" encoding="UTF-8" ?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <Recive xmlns="ChinaPony.OMS">
+        <message>
+            <Head>
+            <SenderID>$this->SenderID</SenderID>
+            <Apptoken>$this->AppToken</Apptoken>
+            <Appkey>$this->AppKey</Appkey>
+            <Sign>$this->Sign</Sign>
+            <ActionID>$this->ActionID</ActionID>
+            <Timestamp>$this->Timestamp</Timestamp>
+            </Head>
+            <Body>
+            $MESSAGEBODY
+            </Body>
+        </message>
+    </Recive>
+  </soap:Body>
+</soap:Envelope>
+ETO;
+
+        return $data;
+    }
+
+    private function getGoodsByOrderId()
+    {
+        $sql = 'SELECT '
+                . 'g.*,'
+                . 'og.goods_price,'
+                . 'og.goods_number,'
+                . 'og.goods_price * og.goods_number AS OrderSum'
+                . ' FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ag'
+                . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ag.order_sn=o.order_sn'
+                . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON og.order_id=o.order_id'
+                . ' INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON og.goods_id=g.goods_id'
+                . ' WHERE ag.id = ' . $this->orderId;
+
+        return $GLOBALS['db']->getAll($sql);
     }
 
     /**
@@ -181,154 +282,6 @@ class airportStorage extends customsCore
                 return 'notexist';
             }
         }
-    }
-
-    private function getCode()
-    {
-        $goods = $this->getGoodsByOrderId();
-
-        /* 数组赋值  2015-6-25  WangMin editer:RenLong 2015-09-14 */
-        $MESSAGEBODY = <<<ETO
-        <BODYMASTER>
-            <LMSNO>$this->LMSNO</LMSNO>
-            <MANUALNO>$this->MANUALNO</MANUALNO>
-            <CBECODE>$this->CBECODE</CBECODE>
-            <CBENAME>$this->CBENAME</CBENAME>
-            <ECPCODE>$this->ECPCODE</ECPCODE>
-            <ECPNAME>$this->ECPNAME</ECPNAME>
-            <PURCHASERNAME>$this->PURCHASERNAME</PURCHASERNAME>
-            <BUYER_REG_NO>$this->BUYER_REG_NO</BUYER_REG_NO>
-            <PURCHASERTELEPHONE>$this->PURCHASERTELEPHONE</PURCHASERTELEPHONE>
-            <COLLECTIONUSERADDRESS>$this->COLLECTIONUSERADDRESS</COLLECTIONUSERADDRESS>
-            <COLLECTIONUSERNAME>$this->COLLECTIONUSERNAME</COLLECTIONUSERNAME>
-            <COLLECTIONUSERTELEPHONE>$this->COLLECTIONUSERTELEPHONE</COLLECTIONUSERTELEPHONE>
-            <GOODSVALUE>$this->GOODSVALUE</GOODSVALUE>
-            <ORDERID>$this->ORDERID</ORDERID>
-            <ORDERSUM>$this->ORDERSUM</ORDERSUM>
-            <CONSUMPTIONTAX>$this->CONSUMPTIONTAX</CONSUMPTIONTAX>
-            <VAT>$this->VAT</VAT>
-            <FREIGHT>$this->FREIGHT</FREIGHT>
-            <OTHERFEE>$this->OTHERFEE</OTHERFEE>
-            <REMARK>$this->REMARK</REMARK>
-            <SENDERUSERCOUNTRY>$this->SENDERUSERCOUNTRY</SENDERUSERCOUNTRY>
-            <SENDERUSERNAME>$this->SENDERUSERNAME</SENDERUSERNAME>
-            <SENDERUSERADDRESS>$this->SENDERUSERADDRESS</SENDERUSERADDRESS>
-            <SENDERUSERTELEPHONE>$this->SENDERUSERTELEPHONE</SENDERUSERTELEPHONE>
-            <IDTYPE>$this->IDTYPE</IDTYPE>
-            <CUSTOMERID>$this->CUSTOMERID</CUSTOMERID>
-            <IETYPE>$this->IETYPE</IETYPE>
-            <MODIFYMARK>$this->MODIFYMARK</MODIFYMARK>
-            <BILLMODE>$this->BILLMODE</BILLMODE>
-            <WASTERORNOT>$this->WASTERORNOT</WASTERORNOT>
-            <BOTANYORNOT>$this->BOTANYORNOT</BOTANYORNOT>
-            <TAXEDENTERPRISE>$this->TAXEDENTERPRISE</TAXEDENTERPRISE>
-            <CBECODEINSP>$this->CBECODEINSP</CBECODEINSP>
-            <ECPCODEINSP>$this->ECPCODEINSP</ECPCODEINSP>
-            <TREPCODEINSP>$this->TREPCODEINSP</TREPCODEINSP>
-            <SUBMITTIME>$this->SUBMITTIME</SUBMITTIME>
-            <TRADECOMPANY>$this->TRADECOMPANY</TRADECOMPANY>
-            <TOTALFEEUNIT>$this->TOTALFEEUNIT</TOTALFEEUNIT>
-            <COUNTOFGOODSTYPE>$this->COUNTOFGOODSTYPE</COUNTOFGOODSTYPE>
-            <WEIGHT>$this->WEIGHT</WEIGHT>
-            <WEIGHTUNIT>$this->WEIGHTUNIT</WEIGHTUNIT>
-            <NETWEIGHT>$this->NETWEIGHT</NETWEIGHT>
-            <NETWEIGHTUNIT>$this->NETWEIGHTUNIT</NETWEIGHTUNIT>
-            <PLATFORMURL>$this->PLATFORMURL</PLATFORMURL>
-            <COLLUSERCOUNTRYINSP>$this->COLLUSERCOUNTRYINSP</COLLUSERCOUNTRYINSP>
-            <SENDUSERCOUNTRYINSP>$this->SENDUSERCOUNTRYINSP</SENDUSERCOUNTRYINSP>
-            <PAYNUMBER>$this->PAYNUMBER</PAYNUMBER>
-            <PAYENTERPRISECODE>$this->PAYENTERPRISECODE</PAYENTERPRISECODE>
-            <PAYENTERPRISENAME>$this->PAYENTERPRISENAME</PAYENTERPRISENAME>
-            <OTHERPAYMENT>$this->OTHERPAYMENT</OTHERPAYMENT>
-            <OTHERPAYMENTTYPE>$this->OTHERPAYMENTTYPE</OTHERPAYMENTTYPE>
-            <LICENSE_NO>$this->LICENSE_NO</LICENSE_NO>
-            <DECLARETYPE>$this->DECLARETYPE</DECLARETYPE>
-            <DECLCODE>$this->DECLCODE</DECLCODE>
-            <DECLNAME>$this->DECLNAME</DECLNAME>
-            <DEPOSITORGUARANTEE>$this->DEPOSITORGUARANTEE</DEPOSITORGUARANTEE>
-            <GUARANTEENO>$this->GUARANTEENO</GUARANTEENO>
-            <EXTENDFIELD1>$this->EXTENDFIELD1</EXTENDFIELD1>
-            <EXTENDFIELD2>$this->EXTENDFIELD2</EXTENDFIELD2>
-            <EXTENDFIELD3>$this->EXTENDFIELD3</EXTENDFIELD3>
-            <EXTENDFIELD4>$this->EXTENDFIELD4</EXTENDFIELD4>
-            <EXTENDFIELD5>$this->EXTENDFIELD5</EXTENDFIELD5>
-        </BODYMASTER>
-ETO;
-
-        $MESSAGEBODY .= '<BODYDETAIL>';
-        foreach ($goods as $value)
-        {
-            $goods_netweight = $value['goods_number'] * $value['netweight'];
-            if (false)
-            {
-                $value['goodidinsp'] = '5120124001AH14525';
-            }
-            $value['goodidinsp'] = $this->CBECODE{$value['goods_sn']};
-            $MESSAGEBODY .= <<<ETO
-                <ORDERLIST>
-                    <GNO>{$value['GNO']}</GNO>
-                    <ITEMNO>$this->ITEMNO</ITEMNO>
-                    <SHELFGOODSNAME>{$value['goods_name']}</SHELFGOODSNAME>
-                    <DESCRIBE></DESCRIBE>
-                    <GOODID>{$value['goods_name']}</GOODID>
-                    <GOODNAME>{$value['goods_name']}</GOODNAME>
-                    <SPECIFICATIONS>{$value['specifications']}</SPECIFICATIONS>
-                    <BARCODE>{$value['barcode']}</BARCODE>
-                    <SOURCEPRODUCERCOUNTRY>{$value['sourceproducercountry']}</SOURCEPRODUCERCOUNTRY>
-                    <COIN>{$value['coin']}</COIN>
-                    <UNIT>{$value['unit']}</UNIT>
-                    <UNIT1>{$value['unit']}</UNIT1>
-                    <UNIT2>{$value['unit2']}</UNIT2>
-                    <AMOUNT>{$value['goods_number']}</AMOUNT>
-                    <AMOUNT1>{$value['goods_number']}</AMOUNT1>
-                    <AMOUNT2>{$value['goods_number2']}</AMOUNT2>
-                    <GOODPRICE>{$value['goods_price']}</GOODPRICE>
-                    <ORDERSUM>{$value['goods_price']}</ORDERSUM>
-                    <FLAG>N</FLAG>
-                    <GOODIDINSP>{$value['goodidinsp']}</GOODIDINSP>
-                    <ORDERID>$this->ORDERID</ORDERID>
-                    <GOODNAMEENGLISH>{$value['goodnameenglish']}</GOODNAMEENGLISH>
-                    <WEIGTH>{$value['weight']}</WEIGTH>
-                    <WEIGHTUNIT>{$value['weightunit']}</WEIGHTUNIT>
-                    <PACKCATEGORYINSP>4M</PACKCATEGORYINSP>
-                    <WASTERORNOTINSP></WASTERORNOTINSP>
-                    <REMARKSINSP></REMARKSINSP>
-                    <COININSP>{$value['coininsp']}</COININSP>
-                    <UNITINSP>{$value['unitinsp']}</UNITINSP>
-                    <SRCCOUNTRYINSP>{$value['srccountryinsp']}</SRCCOUNTRYINSP>
-                    <NETWEIGHT>$goods_netweight</NETWEIGHT>
-                    <RESERVEDFIELD1></RESERVEDFIELD1>
-                    <RESERVEDFIELD2></RESERVEDFIELD2>
-                    <RESERVEDFIELD3></RESERVEDFIELD3>
-                    <RESERVEDFIELD4></RESERVEDFIELD4>
-                    <RESERVEDFIELD5></RESERVEDFIELD5>
-                </ORDERLIST>
-ETO;
-        }
-        $MESSAGEBODY .= '</BODYDETAIL>';
-
-        $data = <<<ETO
-<?xml version="1.0" encoding="UTF-8" ?>
-
-        <MESSAGEBODY>
-            $MESSAGEBODY
-        </MESSAGEBODY>
-        <Invoices></Invoices>
-ETO;
-
-        return $data;
-    }
-
-    private function getGoodsByOrderId()
-    {
-        $sql = 'SELECT og.goods_price,og.goods_number,g.*'
-                . ' FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ag'
-                . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ag.order_sn=o.order_sn'
-                . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON og.order_id=o.order_id'
-                . ' INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON og.goods_id=g.goods_id'
-                . ' WHERE ag.id = ' . $this->orderId;
-
-        return $GLOBALS['db']->getAll($sql);
     }
 
 }
