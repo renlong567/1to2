@@ -85,7 +85,7 @@ class airportStorage extends customsCore
         $this->location = 'http://wms1.chinapony.cn:88/ws/wsorder.asmx';   //测试
 //        $this->Url = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs?wsdl';   //正式
 //        $this->location = 'http://www.haeport.com:8081/DataInteractonWbs/webservice/wbs';   //正式
-        $this->Timestamp = local_date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
+        $this->Timestamp = $_SERVER['REQUEST_TIME'];
 
         $this->CBECode = $_CFG['cus_cbecode'];
         $this->CBEName = $_CFG['cus_cbename'];
@@ -118,99 +118,142 @@ class airportStorage extends customsCore
     {
         $message = $this->getCode();
 
-        $this->createXml($this->PlatformOrderNO, $message, 'st');
-
-        $data = array('parameters' => $message);
+//        $this->createXml($this->PlatformOrderNO, $message, 'st');
+        $data = array('message' => (object) $message);
 //        header('Content-type:text/xml');
 //        print_r($message);
 //        exit;
         $result = $this->sendToServer($data, 'Recive');
-        var_dump($result);
+        print_r($result);
         exit;
 //        return $this->revice($result);
     }
 
     private function getCode()
     {
+        $Details = array();
         $goods = $this->getGoodsByOrderId();
 
+        foreach ($goods as $key => $value)
+        {
+            $Details['OrderDetail'][$key]['GoodsID'] = $value['goods_sn'];
+            $Details['OrderDetail'][$key]['ItemNO'] = $value['itemno'];
+            $Details['OrderDetail'][$key]['GoodsName'] = $value['goodname'];
+            $Details['OrderDetail'][$key]['Amount'] = $value['goods_number'];
+            $Details['OrderDetail'][$key]['GoodsPrice'] = $value['goods_price'];
+            $Details['OrderDetail'][$key]['OrderSum'] = $value['OrderSum'];
+            $Details['OrderDetail'][$key]['ChangeFlag'] = $this->ChangeFlag;
+            $Details['OrderDetail'][$key]['GilfFlag'] = $this->GilfFlag;
+        }
+
+        $MESSAGEBODY = array(
+            'Order' => array(
+                'ECPCode' => $this->ECPCode,
+                'ECPName' => $this->ECPName,
+                'ECPCodeINSP' => $this->ECPCodeINSP,
+                'ECPNameINSP' => $this->ECPNameINSP,
+                'CBECode' => $this->CBECode,
+                'CBEName' => $this->CBEName,
+                'ShopID' => $this->ShopID,
+                'PlatformOrderNO' => $this->PlatformOrderNO,
+                'OrderTime' => $this->OrderTime,
+                'PayTime' => $this->PayTime,
+                'Totoal' => $this->Totoal,
+                'IDType' => $this->IDType,
+                'IDNO' => $this->IDNO,
+                'ConsigneeCountry' => $this->ConsigneeCountry,
+                'ConsigneeName' => $this->ConsigneeName,
+                'C_Province' => $this->C_Province,
+                'C_City' => $this->C_City,
+                'C_Tel1' => $this->C_Tel1,
+                'C_Tel2' => $this->C_Tel2,
+                'C_Zone' => $this->C_Zone,
+                'C_ZIP' => $this->C_ZIP,
+                'C_Address1' => $this->C_Address1,
+                'Remark' => $this->Remark,
+                'InvoicePrintFlag' => $this->InvoicePrintFlag,
+                'DeliverCode' => $this->DeliverCode,
+            ),
+            'Details' => $Details,
+            'Invoices' => array(),
+        );
+
+        $str = <<<ETO
+<AppSecret>1234567890</AppSecret><ActionID>$this->ActionID</ActionID><Timestamp>%s</Timestamp>
+ETO;
+        $str = sprintf($str, local_date('Y-m-d H:i:s', $this->Timestamp));
+        $str .= $this->createSign($goods);
+        print_r($str);exit;
+        $this->Sign = strtoupper(base64_encode(md5($str)));
+
+        $data = array(
+            'Head' => array(
+                'SenderID' => $this->SenderID,
+                'Apptoken' => $this->AppToken,
+                'Appkey' => $this->AppKey,
+                'Sign' => $this->Sign,
+                'ActionID' => $this->ActionID,
+                'Timestamp' => $this->Timestamp,
+            ),
+            'Body' => $MESSAGEBODY,
+        );
+
+        return $data;
+    }
+
+    private function createSign($goods)
+    {
+        $this->OrderTime = local_date('Y-m-d H:i:s',$this->OrderTime);
+        $this->PayTime = local_date('Y-m-d H:i:s',$this->PayTime);
         $MESSAGEBODY = <<<ETO
-<Order>
-        <ECPCode>$this->ECPCode</ECPCode>
-        <ECPName>$this->ECPName</ECPName>
-        <ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>
-        <ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>
-        <CBECode>$this->CBECode</CBECode>
-        <CBEName>$this->CBEName</CBEName>
-        <ShopID>$this->ShopID</ShopID>
-        <PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>
-        <OrderTime>$this->OrderTime</OrderTime>
-        <PayTime>$this->PayTime</PayTime>
-        <Totoal>$this->Totoal</Totoal>
-        <IDType>$this->IDType</IDType>
-        <IDNO>$this->IDNO</IDNO>
-        <ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>
-        <ConsigneeName>$this->ConsigneeName</ConsigneeName>
-        <C_Province>$this->C_Province</C_Province>
-        <C_City>$this->C_City</C_City>
-        <C_Tel1>$this->C_Tel1</C_Tel1>
-        <C_Tel2>$this->C_Tel2</C_Tel2>
-        <C_Zone>$this->C_Zone</C_Zone>
-        <C_ZIP>$this->C_ZIP</C_ZIP>
-        <C_Address1>$this->C_Address1</C_Address1>
-        <Remark>$this->Remark</Remark>
-        <InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>
-        <DeliverCode>$this->DeliverCode</DeliverCode>
-    </Order>
-    <Details>
+<Data>
+<OrderInfo>
+<ECPCode>$this->ECPCode</ECPCode>
+<ECPName>$this->ECPName</ECPName>
+<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>
+<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>
+<CBECode>$this->CBECode</CBECode>
+<CBEName>$this->CBEName</CBEName>
+<ShopID>$this->ShopID</ShopID>
+<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>
+<OrderTime>$this->OrderTime</OrderTime>
+<PayTime>$this->PayTime</PayTime>
+<Totoal>$this->Totoal</Totoal>
+<IDType>$this->IDType</IDType>
+<IDNO>$this->IDNO</IDNO>
+<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>
+<ConsigneeName>$this->ConsigneeName</ConsigneeName>
+<C_Province>$this->C_Province</C_Province>
+<C_City>$this->C_City</C_City>
+<C_Tel1>$this->C_Tel1</C_Tel1>
+<C_Tel2>$this->C_Tel2</C_Tel2>
+<C_Zone>$this->C_Zone</C_Zone>
+<C_ZIP>$this->C_ZIP</C_ZIP>
+<C_Address1>$this->C_Address1</C_Address1>
+<Remark>$this->Remark</Remark>
+<InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>
+<DeliverCode>$this->DeliverCode</DeliverCode>
+</OrderInfo>
+<Details>
 ETO;
         foreach ($goods as $value)
         {
             $MESSAGEBODY .= <<<ETO
-                <OrderDetail>
-                    <GoodsID>{$value['goods_sn']}</GoodsID>
-                    <ItemNO>{$value['itemno']}</ItemNO>
-                    <GoodsName>{$value['goodname']}</GoodsName>
-                    <Amount>{$value['goods_number']}</Amount>
-                    <GoodsPrice>{$value['goods_price']}</GoodsPrice>
-                    <OrderSum>{$value['OrderSum']}</OrderSum>
-                    <ChangeFlag>$this->ChangeFlag</ChangeFlag>
-                    <GilfFlag>$this->GilfFlag</GilfFlag>
-                </OrderDetail>
+<OrderDetail>
+<GoodsID>{$value['goods_sn']}</GoodsID>
+<ItemNO>{$value['itemno']}</ItemNO>
+<GoodsName>{$value['goodname']}</GoodsName>
+<Amount>{$value['goods_number']}</Amount>
+<GoodsPrice>{$value['goods_price']}</GoodsPrice>
+<OrderSum>{$value['OrderSum']}</OrderSum>
+<ChangeFlag>$this->ChangeFlag</ChangeFlag>
+<GilfFlag>$this->GilfFlag</GilfFlag>
+</OrderDetail>
 ETO;
         }
-        $MESSAGEBODY .= '</Details><Invoices></Invoices>';
+        $MESSAGEBODY .= '</Details><Invoices></Invoices></Data>';
 
-        $str = <<<ETO
-            <AppSecret>1234567890</AppSecret><ActionID>$this->ActionID</ActionID><Timestamp>$this->Timestamp</Timestamp>'
-ETO;
-        $str .= $MESSAGEBODY;
-        $this->Sign = strtoupper(base64_encode(md5($str)));
-
-        $data = <<<ETO
-<?xml version="1.0" encoding="UTF-8" ?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <soap:Body>
-    <Recive xmlns="ChinaPony.OMS">
-        <message>
-            <Head>
-            <SenderID>$this->SenderID</SenderID>
-            <Apptoken>$this->AppToken</Apptoken>
-            <Appkey>$this->AppKey</Appkey>
-            <Sign>$this->Sign</Sign>
-            <ActionID>$this->ActionID</ActionID>
-            <Timestamp>$this->Timestamp</Timestamp>
-            </Head>
-            <Body>
-            $MESSAGEBODY
-            </Body>
-        </message>
-    </Recive>
-  </soap:Body>
-</soap:Envelope>
-ETO;
-
-        return $data;
+        return $MESSAGEBODY;
     }
 
     private function getGoodsByOrderId()
