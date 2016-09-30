@@ -285,6 +285,7 @@ elseif ($_REQUEST['act'] == 'customsAction')
             }
 
             $airportStorage->orderId = $v;
+            $airportStorage->ActionID = $modifyMark;
             $airportStorage->PlatformOrderNO = $order['order_sn'];
             $airportStorage->OrderTime = local_strtotime($order['order_addtime']);
             $airportStorage->PayTime = local_strtotime($order['pay_time']);

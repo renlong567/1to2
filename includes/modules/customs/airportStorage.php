@@ -117,7 +117,7 @@ class airportStorage extends customsCore
     public function send()
     {
         $message = $this->getCode();
-
+        print_r($message);
 //        $this->createXml($this->PlatformOrderNO, $message, 'st');
         $data = array('message' => (object) $message);
 //        header('Content-type:text/xml');
@@ -178,12 +178,9 @@ class airportStorage extends customsCore
             'Invoices' => array(),
         );
 
-        $str = <<<ETO
-<AppSecret>1234567890</AppSecret><ActionID>$this->ActionID</ActionID><Timestamp>%s</Timestamp>
-ETO;
+        $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><AppSecret>1234567890</AppSecret><ActionID>$this->ActionID</ActionID><Timestamp>%s</Timestamp>";
         $str = sprintf($str, local_date('Y-m-d H:i:s', $this->Timestamp));
         $str .= $this->createSign($goods);
-        print_r($str);exit;
         $this->Sign = strtoupper(base64_encode(md5($str)));
 
         $data = array(
@@ -203,53 +200,50 @@ ETO;
 
     private function createSign($goods)
     {
-        $this->OrderTime = local_date('Y-m-d H:i:s',$this->OrderTime);
-        $this->PayTime = local_date('Y-m-d H:i:s',$this->PayTime);
-        $MESSAGEBODY = <<<ETO
-<Data>
-<OrderInfo>
-<ECPCode>$this->ECPCode</ECPCode>
-<ECPName>$this->ECPName</ECPName>
-<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>
-<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>
-<CBECode>$this->CBECode</CBECode>
-<CBEName>$this->CBEName</CBEName>
-<ShopID>$this->ShopID</ShopID>
-<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>
-<OrderTime>$this->OrderTime</OrderTime>
-<PayTime>$this->PayTime</PayTime>
-<Totoal>$this->Totoal</Totoal>
-<IDType>$this->IDType</IDType>
-<IDNO>$this->IDNO</IDNO>
-<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>
-<ConsigneeName>$this->ConsigneeName</ConsigneeName>
-<C_Province>$this->C_Province</C_Province>
-<C_City>$this->C_City</C_City>
-<C_Tel1>$this->C_Tel1</C_Tel1>
-<C_Tel2>$this->C_Tel2</C_Tel2>
-<C_Zone>$this->C_Zone</C_Zone>
-<C_ZIP>$this->C_ZIP</C_ZIP>
-<C_Address1>$this->C_Address1</C_Address1>
-<Remark>$this->Remark</Remark>
-<InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>
-<DeliverCode>$this->DeliverCode</DeliverCode>
-</OrderInfo>
-<Details>
-ETO;
+        $this->OrderTime = local_date('Y-m-d H:i:s', $this->OrderTime);
+        $this->PayTime = local_date('Y-m-d H:i:s', $this->PayTime);
+        $MESSAGEBODY = '<Data>';
+        $MESSAGEBODY .= '<OrderInfo>';
+        $MESSAGEBODY .= "<ECPCode>$this->ECPCode</ECPCode>";
+        $MESSAGEBODY .= "<ECPName>$this->ECPName</ECPName>";
+        $MESSAGEBODY .= "<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>";
+        $MESSAGEBODY .= "<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>";
+        $MESSAGEBODY .= "<CBECode>$this->CBECode</CBECode>";
+        $MESSAGEBODY .= "<CBEName>$this->CBEName</CBEName>";
+        $MESSAGEBODY .= "<ShopID>$this->ShopID</ShopID>";
+        $MESSAGEBODY .= "<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>";
+        $MESSAGEBODY .= "<OrderTime>$this->OrderTime</OrderTime>";
+        $MESSAGEBODY .= "<PayTime>$this->PayTime</PayTime>";
+        $MESSAGEBODY .= "<Totoal>$this->Totoal</Totoal>";
+        $MESSAGEBODY .= "<IDType>$this->IDType</IDType>";
+        $MESSAGEBODY .= "<IDNO>$this->IDNO</IDNO>";
+        $MESSAGEBODY .= "<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>";
+        $MESSAGEBODY .= "<ConsigneeName>$this->ConsigneeName</ConsigneeName>";
+        $MESSAGEBODY .= "<C_Province>$this->C_Province</C_Province>";
+        $MESSAGEBODY .= "<C_City>$this->C_City</C_City>";
+        $MESSAGEBODY .= "<C_Tel1>$this->C_Tel1</C_Tel1>";
+        $MESSAGEBODY .= "<C_Tel2>$this->C_Tel2</C_Tel2>";
+        $MESSAGEBODY .= "<C_Zone>$this->C_Zone</C_Zone>";
+        $MESSAGEBODY .= "<C_ZIP>$this->C_ZIP</C_ZIP>";
+        $MESSAGEBODY .= "<C_Address1>$this->C_Address1</C_Address1>";
+        $MESSAGEBODY .= "<Remark>$this->Remark</Remark>";
+        $MESSAGEBODY .= "<InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>";
+        $MESSAGEBODY .= "<DeliverCode>$this->DeliverCode</DeliverCode>";
+        $MESSAGEBODY .= '</OrderInfo>';
+        $MESSAGEBODY .= '<Details>';
+
         foreach ($goods as $value)
         {
-            $MESSAGEBODY .= <<<ETO
-<OrderDetail>
-<GoodsID>{$value['goods_sn']}</GoodsID>
-<ItemNO>{$value['itemno']}</ItemNO>
-<GoodsName>{$value['goodname']}</GoodsName>
-<Amount>{$value['goods_number']}</Amount>
-<GoodsPrice>{$value['goods_price']}</GoodsPrice>
-<OrderSum>{$value['OrderSum']}</OrderSum>
-<ChangeFlag>$this->ChangeFlag</ChangeFlag>
-<GilfFlag>$this->GilfFlag</GilfFlag>
-</OrderDetail>
-ETO;
+            $MESSAGEBODY .= '<OrderDetail>';
+            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>";
+            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>";
+            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>";
+            $MESSAGEBODY .= "<Amount>{$value['goods_number']}</Amount>";
+            $MESSAGEBODY .= "<GoodsPrice>{$value['goods_price']}</GoodsPrice>";
+            $MESSAGEBODY .= "<OrderSum>{$value['OrderSum']}</OrderSum>";
+            $MESSAGEBODY .= "<ChangeFlag>$this->ChangeFlag</ChangeFlag>";
+            $MESSAGEBODY .= "<GilfFlag>$this->GilfFlag</GilfFlag>";
+            $MESSAGEBODY .= '</OrderDetail>';
         }
         $MESSAGEBODY .= '</Details><Invoices></Invoices></Data>';
 
