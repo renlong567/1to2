@@ -119,7 +119,7 @@ class airportStorage extends customsCore
         $message = $this->getCode();
         print_r($message);
 //        $this->createXml($this->PlatformOrderNO, $message, 'st');
-        $data = array('message' => (object) $message);
+        $data = array('message' => $message);
 //        header('Content-type:text/xml');
 //        print_r($message);
 //        exit;
@@ -175,14 +175,14 @@ class airportStorage extends customsCore
                 'DeliverCode' => $this->DeliverCode,
             ),
             'Details' => $Details,
-            'Invoices' => array(),
+            'Invoices' => '',
         );
 
-        $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><AppSecret>1234567890</AppSecret><ActionID>$this->ActionID</ActionID><Timestamp>%s</Timestamp>";
-        $str = sprintf($str, local_date('Y-m-d H:i:s', $this->Timestamp));
-        $str .= $this->createSign($goods);
+        $str = $this->createSign($goods);
         $this->Sign = strtoupper(base64_encode(md5($str)));
-
+        var_dump($this->Sign);
+        var_dump(md5($str));
+//        exit;
         $data = array(
             'Head' => array(
                 'SenderID' => $this->SenderID,
@@ -200,52 +200,60 @@ class airportStorage extends customsCore
 
     private function createSign($goods)
     {
+        $Timestamp = local_date('Y-m-d H:i:s', $this->Timestamp);
         $this->OrderTime = local_date('Y-m-d H:i:s', $this->OrderTime);
         $this->PayTime = local_date('Y-m-d H:i:s', $this->PayTime);
-        $MESSAGEBODY = '<Data>';
-        $MESSAGEBODY .= '<OrderInfo>';
-        $MESSAGEBODY .= "<ECPCode>$this->ECPCode</ECPCode>";
-        $MESSAGEBODY .= "<ECPName>$this->ECPName</ECPName>";
-        $MESSAGEBODY .= "<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>";
-        $MESSAGEBODY .= "<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>";
-        $MESSAGEBODY .= "<CBECode>$this->CBECode</CBECode>";
-        $MESSAGEBODY .= "<CBEName>$this->CBEName</CBEName>";
-        $MESSAGEBODY .= "<ShopID>$this->ShopID</ShopID>";
-        $MESSAGEBODY .= "<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>";
-        $MESSAGEBODY .= "<OrderTime>$this->OrderTime</OrderTime>";
-        $MESSAGEBODY .= "<PayTime>$this->PayTime</PayTime>";
-        $MESSAGEBODY .= "<Totoal>$this->Totoal</Totoal>";
-        $MESSAGEBODY .= "<IDType>$this->IDType</IDType>";
-        $MESSAGEBODY .= "<IDNO>$this->IDNO</IDNO>";
-        $MESSAGEBODY .= "<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>";
-        $MESSAGEBODY .= "<ConsigneeName>$this->ConsigneeName</ConsigneeName>";
-        $MESSAGEBODY .= "<C_Province>$this->C_Province</C_Province>";
-        $MESSAGEBODY .= "<C_City>$this->C_City</C_City>";
-        $MESSAGEBODY .= "<C_Tel1>$this->C_Tel1</C_Tel1>";
-        $MESSAGEBODY .= "<C_Tel2>$this->C_Tel2</C_Tel2>";
-        $MESSAGEBODY .= "<C_Zone>$this->C_Zone</C_Zone>";
-        $MESSAGEBODY .= "<C_ZIP>$this->C_ZIP</C_ZIP>";
-        $MESSAGEBODY .= "<C_Address1>$this->C_Address1</C_Address1>";
-        $MESSAGEBODY .= "<Remark>$this->Remark</Remark>";
-        $MESSAGEBODY .= "<InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>";
-        $MESSAGEBODY .= "<DeliverCode>$this->DeliverCode</DeliverCode>";
-        $MESSAGEBODY .= '</OrderInfo>';
-        $MESSAGEBODY .= '<Details>';
+
+        $MESSAGEBODY = "<AppSecret>1234567890</AppSecret>" . PHP_EOL;
+        $MESSAGEBODY .= "<ActionID>$this->ActionID</ActionID>" . PHP_EOL;
+        $MESSAGEBODY .= "<Timestamp>$Timestamp</Timestamp>" . PHP_EOL;
+        $MESSAGEBODY .= "<Data>" . PHP_EOL;
+        $MESSAGEBODY .= "<OrderInfo>" . PHP_EOL;
+        $MESSAGEBODY .= "<ECPCode>$this->ECPCode</ECPCode>" . PHP_EOL;
+        $MESSAGEBODY .= "<ECPName>$this->ECPName</ECPName>" . PHP_EOL;
+        $MESSAGEBODY .= "<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>" . PHP_EOL;
+        $MESSAGEBODY .= "<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>" . PHP_EOL;
+        $MESSAGEBODY .= "<CBECode>$this->CBECode</CBECode>" . PHP_EOL;
+        $MESSAGEBODY .= "<CBEName>$this->CBEName</CBEName>" . PHP_EOL;
+        $MESSAGEBODY .= "<ShopID>$this->ShopID</ShopID>" . PHP_EOL;
+        $MESSAGEBODY .= "<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>" . PHP_EOL;
+        $MESSAGEBODY .= "<OrderTime>$this->OrderTime</OrderTime>" . PHP_EOL;
+        $MESSAGEBODY .= "<PayTime>$this->PayTime</PayTime>" . PHP_EOL;
+        $MESSAGEBODY .= "<Totoal>$this->Totoal</Totoal>" . PHP_EOL;
+        $MESSAGEBODY .= "<IDType>$this->IDType</IDType>" . PHP_EOL;
+        $MESSAGEBODY .= "<IDNO>$this->IDNO</IDNO>" . PHP_EOL;
+        $MESSAGEBODY .= "<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>" . PHP_EOL;
+        $MESSAGEBODY .= "<ConsigneeName>$this->ConsigneeName</ConsigneeName>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_Province>$this->C_Province</C_Province>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_City>$this->C_City</C_City>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_Tel1>$this->C_Tel1</C_Tel1>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_Tel2>$this->C_Tel2</C_Tel2>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_Zone>$this->C_Zone</C_Zone>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_ZIP>$this->C_ZIP</C_ZIP>" . PHP_EOL;
+        $MESSAGEBODY .= "<C_Address1>$this->C_Address1</C_Address1>" . PHP_EOL;
+        $MESSAGEBODY .= "<Remark>$this->Remark</Remark>" . PHP_EOL;
+        $MESSAGEBODY .= "<InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>" . PHP_EOL;
+        $MESSAGEBODY .= "<DeliverCode>$this->DeliverCode</DeliverCode>" . PHP_EOL;
+        $MESSAGEBODY .= "</OrderInfo>" . PHP_EOL;
+        $MESSAGEBODY .= "<Details>" . PHP_EOL;
 
         foreach ($goods as $value)
         {
-            $MESSAGEBODY .= '<OrderDetail>';
-            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>";
-            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>";
-            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>";
-            $MESSAGEBODY .= "<Amount>{$value['goods_number']}</Amount>";
-            $MESSAGEBODY .= "<GoodsPrice>{$value['goods_price']}</GoodsPrice>";
-            $MESSAGEBODY .= "<OrderSum>{$value['OrderSum']}</OrderSum>";
-            $MESSAGEBODY .= "<ChangeFlag>$this->ChangeFlag</ChangeFlag>";
-            $MESSAGEBODY .= "<GilfFlag>$this->GilfFlag</GilfFlag>";
-            $MESSAGEBODY .= '</OrderDetail>';
+            $MESSAGEBODY .= "<OrderDetail>" . PHP_EOL;
+            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>" . PHP_EOL;
+            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>" . PHP_EOL;
+            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>" . PHP_EOL;
+            $MESSAGEBODY .= "<Amount>{$value['goods_number']}</Amount>" . PHP_EOL;
+            $MESSAGEBODY .= "<GoodsPrice>{$value['goods_price']}</GoodsPrice>" . PHP_EOL;
+            $MESSAGEBODY .= "<OrderSum>{$value['OrderSum']}</OrderSum>" . PHP_EOL;
+            $MESSAGEBODY .= "<ChangeFlag>$this->ChangeFlag</ChangeFlag>" . PHP_EOL;
+            $MESSAGEBODY .= "<GilfFlag>$this->GilfFlag</GilfFlag>" . PHP_EOL;
+            $MESSAGEBODY .= "</OrderDetail>" . PHP_EOL;
         }
-        $MESSAGEBODY .= '</Details><Invoices></Invoices></Data>';
+        $MESSAGEBODY .= "</Details>" . PHP_EOL;
+        $MESSAGEBODY .= "<Invoices>" . PHP_EOL;
+        $MESSAGEBODY .= "</Invoices>" . PHP_EOL;
+        $MESSAGEBODY .= "</Data>" . PHP_EOL;
 
         return $MESSAGEBODY;
     }
