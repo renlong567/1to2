@@ -47,7 +47,7 @@ class airportStorage extends customsCore
     public $C_ZIP = '';    //收货人邮编 C_ZIP VarChar(50) 50     
     public $C_Address1 = '';       //收货人所在地址 C_Address1 VarChar(200) 200   是
     public $Remark = '';   //备注信息 Remark VarChar(800) 800     
-    public $InvoicePrintFlag = 'False'; //是否需要发票 InvoicePrintFlag bit     是
+    public $InvoicePrintFlag = false; //是否需要发票 InvoicePrintFlag bit     是
     public $DeliverCode = 'ZTO';      //快递公司编号 DeliverCode VarChar(20) 20   是
     /* 订单明细信息 */
     public $GoodsID = '';   //单品ID GoodsID VarChar(20) 20   是
@@ -56,8 +56,8 @@ class airportStorage extends customsCore
     public $Amount = '';    //成交数量 Amount int     是
     public $GoodsPrice = '';       //成交单价 GoodsPrice Decimal(10,2) 10 2 是
     public $OrderSum = ''; //成交总价 OrderSum Decimal(10,2) 10 2 是
-    public $ChangeFlag = 'False';       //是否退换货 ChangeFlag bit     是
-    public $GilfFlag = 'False'; //是否赠品 GilfFlag bit     是
+    public $ChangeFlag = false;       //是否退换货 ChangeFlag bit     是
+    public $GilfFlag = false; //是否赠品 GilfFlag bit     是
 
     /* 发票信息 */
 
@@ -117,16 +117,13 @@ class airportStorage extends customsCore
     public function send()
     {
         $message = $this->getCode();
-        print_r($message);
-//        $this->createXml($this->PlatformOrderNO, $message, 'st');
+
         $data = array('message' => $message);
-//        header('Content-type:text/xml');
-//        print_r($message);
-//        exit;
+
         $result = $this->sendToServer($data, 'Recive');
         print_r($result);
-        exit;
-//        return $this->revice($result);
+
+        return $this->revice($result);
     }
 
     private function getCode()
@@ -136,9 +133,12 @@ class airportStorage extends customsCore
 
         foreach ($goods as $key => $value)
         {
-            $Details['OrderDetail'][$key]['GoodsID'] = $value['goods_sn'];
-            $Details['OrderDetail'][$key]['ItemNO'] = $value['itemno'];
-            $Details['OrderDetail'][$key]['GoodsName'] = $value['goodname'];
+//            $Details['OrderDetail'][$key]['GoodsID'] = $value['goods_sn'];    //正式
+//            $Details['OrderDetail'][$key]['ItemNO'] = $value['itemno'];   //正式
+//            $Details['OrderDetail'][$key]['GoodsName'] = $value['goodname'];  //正式
+            $Details['OrderDetail'][$key]['GoodsID'] = 'SKU0000001';    //测试
+            $Details['OrderDetail'][$key]['ItemNO'] = '690003'; //测试
+            $Details['OrderDetail'][$key]['GoodsName'] = '测试商品001'; //测试
             $Details['OrderDetail'][$key]['Amount'] = $value['goods_number'];
             $Details['OrderDetail'][$key]['GoodsPrice'] = $value['goods_price'];
             $Details['OrderDetail'][$key]['OrderSum'] = $value['OrderSum'];
@@ -180,9 +180,7 @@ class airportStorage extends customsCore
 
         $str = $this->createSign($goods);
         $this->Sign = strtoupper(base64_encode(md5($str)));
-        var_dump($this->Sign);
-        var_dump(md5($str));
-//        exit;
+
         $data = array(
             'Head' => array(
                 'SenderID' => $this->SenderID,
@@ -204,56 +202,59 @@ class airportStorage extends customsCore
         $this->OrderTime = local_date('Y-m-d H:i:s', $this->OrderTime);
         $this->PayTime = local_date('Y-m-d H:i:s', $this->PayTime);
 
-        $MESSAGEBODY = "<AppSecret>1234567890</AppSecret>" . PHP_EOL;
-        $MESSAGEBODY .= "<ActionID>$this->ActionID</ActionID>" . PHP_EOL;
-        $MESSAGEBODY .= "<Timestamp>$Timestamp</Timestamp>" . PHP_EOL;
-        $MESSAGEBODY .= "<Data>" . PHP_EOL;
-        $MESSAGEBODY .= "<OrderInfo>" . PHP_EOL;
-        $MESSAGEBODY .= "<ECPCode>$this->ECPCode</ECPCode>" . PHP_EOL;
-        $MESSAGEBODY .= "<ECPName>$this->ECPName</ECPName>" . PHP_EOL;
-        $MESSAGEBODY .= "<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>" . PHP_EOL;
-        $MESSAGEBODY .= "<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>" . PHP_EOL;
-        $MESSAGEBODY .= "<CBECode>$this->CBECode</CBECode>" . PHP_EOL;
-        $MESSAGEBODY .= "<CBEName>$this->CBEName</CBEName>" . PHP_EOL;
-        $MESSAGEBODY .= "<ShopID>$this->ShopID</ShopID>" . PHP_EOL;
-        $MESSAGEBODY .= "<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>" . PHP_EOL;
-        $MESSAGEBODY .= "<OrderTime>$this->OrderTime</OrderTime>" . PHP_EOL;
-        $MESSAGEBODY .= "<PayTime>$this->PayTime</PayTime>" . PHP_EOL;
-        $MESSAGEBODY .= "<Totoal>$this->Totoal</Totoal>" . PHP_EOL;
-        $MESSAGEBODY .= "<IDType>$this->IDType</IDType>" . PHP_EOL;
-        $MESSAGEBODY .= "<IDNO>$this->IDNO</IDNO>" . PHP_EOL;
-        $MESSAGEBODY .= "<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>" . PHP_EOL;
-        $MESSAGEBODY .= "<ConsigneeName>$this->ConsigneeName</ConsigneeName>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_Province>$this->C_Province</C_Province>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_City>$this->C_City</C_City>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_Tel1>$this->C_Tel1</C_Tel1>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_Tel2>$this->C_Tel2</C_Tel2>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_Zone>$this->C_Zone</C_Zone>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_ZIP>$this->C_ZIP</C_ZIP>" . PHP_EOL;
-        $MESSAGEBODY .= "<C_Address1>$this->C_Address1</C_Address1>" . PHP_EOL;
-        $MESSAGEBODY .= "<Remark>$this->Remark</Remark>" . PHP_EOL;
-        $MESSAGEBODY .= "<InvoicePrintFlag>$this->InvoicePrintFlag</InvoicePrintFlag>" . PHP_EOL;
-        $MESSAGEBODY .= "<DeliverCode>$this->DeliverCode</DeliverCode>" . PHP_EOL;
-        $MESSAGEBODY .= "</OrderInfo>" . PHP_EOL;
-        $MESSAGEBODY .= "<Details>" . PHP_EOL;
+        $MESSAGEBODY = "<AppSecret>1234567890</AppSecret>";
+        $MESSAGEBODY .= "<ActionID>$this->ActionID</ActionID>";
+        $MESSAGEBODY .= "<Timestamp>$Timestamp</Timestamp>";
+        $MESSAGEBODY .= "<Data>";
+        $MESSAGEBODY .= "<OrderInfo>";
+        $MESSAGEBODY .= "<ECPCode>$this->ECPCode</ECPCode>";
+        $MESSAGEBODY .= "<ECPName>$this->ECPName</ECPName>";
+        $MESSAGEBODY .= "<ECPCodeINSP>$this->ECPCodeINSP</ECPCodeINSP>";
+        $MESSAGEBODY .= "<ECPNameINSP>$this->ECPNameINSP</ECPNameINSP>";
+        $MESSAGEBODY .= "<CBECode>$this->CBECode</CBECode>";
+        $MESSAGEBODY .= "<CBEName>$this->CBEName</CBEName>";
+        $MESSAGEBODY .= "<ShopID>$this->ShopID</ShopID>";
+        $MESSAGEBODY .= "<PlatformOrderNO>$this->PlatformOrderNO</PlatformOrderNO>";
+        $MESSAGEBODY .= "<OrderTime>$this->OrderTime</OrderTime>";
+        $MESSAGEBODY .= "<PayTime>$this->PayTime</PayTime>";
+        $MESSAGEBODY .= "<Totoal>$this->Totoal</Totoal>";
+        $MESSAGEBODY .= "<IDType>$this->IDType</IDType>";
+        $MESSAGEBODY .= "<IDNO>$this->IDNO</IDNO>";
+        $MESSAGEBODY .= "<ConsigneeCountry>$this->ConsigneeCountry</ConsigneeCountry>";
+        $MESSAGEBODY .= "<ConsigneeName>$this->ConsigneeName</ConsigneeName>";
+        $MESSAGEBODY .= "<C_Province>$this->C_Province</C_Province>";
+        $MESSAGEBODY .= "<C_City>$this->C_City</C_City>";
+        $MESSAGEBODY .= "<C_Tel1>$this->C_Tel1</C_Tel1>";
+        $MESSAGEBODY .= "<C_Tel2>$this->C_Tel2</C_Tel2>";
+        $MESSAGEBODY .= "<C_Zone>$this->C_Zone</C_Zone>";
+        $MESSAGEBODY .= "<C_ZIP>$this->C_ZIP</C_ZIP>";
+        $MESSAGEBODY .= "<C_Address1>$this->C_Address1</C_Address1>";
+        $MESSAGEBODY .= "<Remark>$this->Remark</Remark>";
+        $MESSAGEBODY .= "<InvoicePrintFlag>False</InvoicePrintFlag>";
+        $MESSAGEBODY .= "<DeliverCode>$this->DeliverCode</DeliverCode>";
+        $MESSAGEBODY .= "</OrderInfo>";
+        $MESSAGEBODY .= "<Details>";
 
         foreach ($goods as $value)
         {
-            $MESSAGEBODY .= "<OrderDetail>" . PHP_EOL;
-            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>" . PHP_EOL;
-            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>" . PHP_EOL;
-            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>" . PHP_EOL;
-            $MESSAGEBODY .= "<Amount>{$value['goods_number']}</Amount>" . PHP_EOL;
-            $MESSAGEBODY .= "<GoodsPrice>{$value['goods_price']}</GoodsPrice>" . PHP_EOL;
-            $MESSAGEBODY .= "<OrderSum>{$value['OrderSum']}</OrderSum>" . PHP_EOL;
-            $MESSAGEBODY .= "<ChangeFlag>$this->ChangeFlag</ChangeFlag>" . PHP_EOL;
-            $MESSAGEBODY .= "<GilfFlag>$this->GilfFlag</GilfFlag>" . PHP_EOL;
-            $MESSAGEBODY .= "</OrderDetail>" . PHP_EOL;
+            $MESSAGEBODY .= "<OrderDetail>";
+            $MESSAGEBODY .= "<GoodsID>SKU0000001</GoodsID>";  //测试
+            $MESSAGEBODY .= "<ItemNO>690003</ItemNO>";  //测试
+            $MESSAGEBODY .= "<GoodsName>测试商品001</GoodsName>";  //测试
+//            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>";    //正式
+//            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>";  //正式
+//            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>";  //正式
+            $MESSAGEBODY .= "<Amount>{$value['goods_number']}</Amount>";
+            $MESSAGEBODY .= "<GoodsPrice>{$value['goods_price']}</GoodsPrice>";
+            $MESSAGEBODY .= "<OrderSum>{$value['OrderSum']}</OrderSum>";
+            $MESSAGEBODY .= "<ChangeFlag>False</ChangeFlag>";
+            $MESSAGEBODY .= "<GilfFlag>False</GilfFlag>";
+            $MESSAGEBODY .= "</OrderDetail>";
         }
-        $MESSAGEBODY .= "</Details>" . PHP_EOL;
-        $MESSAGEBODY .= "<Invoices>" . PHP_EOL;
-        $MESSAGEBODY .= "</Invoices>" . PHP_EOL;
-        $MESSAGEBODY .= "</Data>" . PHP_EOL;
+        $MESSAGEBODY .= "</Details>";
+        $MESSAGEBODY .= "<Invoices>";
+        $MESSAGEBODY .= "</Invoices>";
+        $MESSAGEBODY .= "</Data>";
 
         return $MESSAGEBODY;
     }
@@ -283,16 +284,14 @@ class airportStorage extends customsCore
      */
     private function revice($result = '')
     {
-        $result_xml = $result->return;
-        $data = simplexml_load_string($result_xml);
+        $data = $result->ReciveResult;
 
         if (!empty($data))
         {
-            if (!empty($data->MESSAGEBODY->BODYMASTER->NUMBER))
+            if (!empty($data->StateFlag))
             {
-                $orderSn = $data->MESSAGEBODY->BODYMASTER->NUMBER;
-                $batchNumber_path = empty($this->batchNumbers) ? '' : '/' . $this->batchNumbers;
-                $this->createXml($orderSn, $result_xml, 'order' . $batchNumber_path, 'receive');
+                $orderSn = $data->Detail;
+
                 $where = 'order_sn=\'' . mysql_real_escape_string($orderSn) . '\'';
                 $key = array(
                     'st_status', 'st_comments'
