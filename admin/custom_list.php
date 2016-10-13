@@ -368,7 +368,7 @@ elseif ($_REQUEST['act'] == 'excel_order_action')
             // 创建文件上传目录
             if (!is_dir($uploaddir))
             {
-                if (!mkdir($uploaddir))
+                if (!mkdir($uploaddir,0777,true))
                 {
                     echo '<script>alert("上传目录没有create权限！请联系管理员修改！");location="airport.php?act=excel"</script>';
                 }
