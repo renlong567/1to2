@@ -52,8 +52,6 @@
                 <th>支付单回执</th>
                 <th><a href="javascript:listTable.sort('transfer_status', 'ASC'); ">EMS运单状态</a></th>
                 <th><a href="javascript:listTable.sort('transfer_comments', 'ASC'); ">EMS运单原因</a></th>
-                <th>仓储报文</th>
-                <th>仓储回执</th>
                 <th><a href="javascript:listTable.sort('st_status', 'ASC'); ">仓储状态</a></th>
                 <th><a href="javascript:listTable.sort('st_comments', 'ASC'); ">仓储原因</a></th>
                 <th>{$lang.handler}</th>
@@ -80,8 +78,6 @@
                 <td align="center"><a href="/data/customs/airport/receive/pay/{$n.order_sn}.xml" target="_blank">支付回执</a></td>
                 <td align="center">{$n.transfer_status}</td>
                 <td align="center">{$n.transfer_comments}</td>
-                <td align="center"><a href="/data/customs/airport/send/st/{$n.order_sn}.xml" target="_blank">仓储报文</a></td>
-                <td align="center"><a href="/data/customs/airport/receive/st/{$n.order_sn}.xml" target="_blank">仓储回执</a></td>
                 <td align="center">{$n.st_status}</td>
                 <td align="center">{$n.st_comments}</td>
                 <td align="center">
@@ -92,7 +88,7 @@
             {/foreach}
             <tr>
                 <td align="center"><input type="checkbox" onclick="sel(this)" /></td>
-                <td colspan="23" align="right">
+                <td colspan="21" align="right">
                     {include file="page.htm"}
                 </td>
             </tr>

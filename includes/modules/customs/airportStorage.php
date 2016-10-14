@@ -121,7 +121,6 @@ class airportStorage extends customsCore
         $data = array('message' => $message);
 
         $result = $this->sendToServer($data, 'Recive');
-        print_r($result);
 
         return $this->revice($result);
     }
@@ -133,12 +132,12 @@ class airportStorage extends customsCore
 
         foreach ($goods as $key => $value)
         {
-//            $Details['OrderDetail'][$key]['GoodsID'] = $value['goods_sn'];    //正式
-//            $Details['OrderDetail'][$key]['ItemNO'] = $value['itemno'];   //正式
-//            $Details['OrderDetail'][$key]['GoodsName'] = $value['goodname'];  //正式
-            $Details['OrderDetail'][$key]['GoodsID'] = 'SKU0000001';    //测试
-            $Details['OrderDetail'][$key]['ItemNO'] = '690003'; //测试
-            $Details['OrderDetail'][$key]['GoodsName'] = '测试商品001'; //测试
+            $Details['OrderDetail'][$key]['GoodsID'] = $value['goods_sn'];    //正式
+            $Details['OrderDetail'][$key]['ItemNO'] = $value['itemno'];   //正式
+            $Details['OrderDetail'][$key]['GoodsName'] = $value['goodname'];  //正式
+//            $Details['OrderDetail'][$key]['GoodsID'] = 'SKU0000001';    //测试
+//            $Details['OrderDetail'][$key]['ItemNO'] = '690003'; //测试
+//            $Details['OrderDetail'][$key]['GoodsName'] = '测试商品001'; //测试
             $Details['OrderDetail'][$key]['Amount'] = $value['goods_number'];
             $Details['OrderDetail'][$key]['GoodsPrice'] = $value['goods_price'];
             $Details['OrderDetail'][$key]['OrderSum'] = $value['OrderSum'];
@@ -238,12 +237,12 @@ class airportStorage extends customsCore
         foreach ($goods as $value)
         {
             $MESSAGEBODY .= "<OrderDetail>";
-            $MESSAGEBODY .= "<GoodsID>SKU0000001</GoodsID>";  //测试
-            $MESSAGEBODY .= "<ItemNO>690003</ItemNO>";  //测试
-            $MESSAGEBODY .= "<GoodsName>测试商品001</GoodsName>";  //测试
-//            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>";    //正式
-//            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>";  //正式
-//            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>";  //正式
+//            $MESSAGEBODY .= "<GoodsID>SKU0000001</GoodsID>";  //测试
+//            $MESSAGEBODY .= "<ItemNO>690003</ItemNO>";  //测试
+//            $MESSAGEBODY .= "<GoodsName>测试商品001</GoodsName>";  //测试
+            $MESSAGEBODY .= "<GoodsID>{$value['goods_sn']}</GoodsID>";    //正式
+            $MESSAGEBODY .= "<ItemNO>{$value['itemno']}</ItemNO>";  //正式
+            $MESSAGEBODY .= "<GoodsName>{$value['goodname']}</GoodsName>";  //正式
             $MESSAGEBODY .= "<Amount>{$value['goods_number']}</Amount>";
             $MESSAGEBODY .= "<GoodsPrice>{$value['goods_price']}</GoodsPrice>";
             $MESSAGEBODY .= "<OrderSum>{$value['OrderSum']}</OrderSum>";
@@ -288,19 +287,10 @@ class airportStorage extends customsCore
 
         if (!empty($data))
         {
-            if (!empty($data->StateFlag))
-            {
-                $orderSn = $data->Detail;
-
-                $where = 'order_sn=\'' . mysql_real_escape_string($orderSn) . '\'';
-                $key = array(
-                    'st_status', 'st_comments'
-                );
-            }
-            else
-            {
-                return 'unknown error';
-            }
+            $where = 'order_sn=\'' . $this->PlatformOrderNO . '\'';
+            $key = array(
+                'st_status', 'st_comments'
+            );
 
             $sql = 'SELECT COUNT(*) FROM ' . $GLOBALS['ecs']->table('airport_order') . ' WHERE ' . $where;
             $id = $GLOBALS['db']->getOne($sql);
@@ -308,8 +298,8 @@ class airportStorage extends customsCore
             if ($id)
             {
                 $data = array(
-                    $key[0] => $data->MESSAGEBODY->BODYMASTER->FLAG == 'SUCCESS' ? 1 : 0,
-                    $key[1] => mysql_real_escape_string($data->MESSAGEBODY->BODYMASTER->COMMENTS)
+                    $key[0] => $data->StateFlag == 1 ? AIRPORT_CUSTOMS_OK : AIRPORT_CUSTOMS_FAIL,
+                    $key[1] => mysql_real_escape_string($data->Detail)
                 );
 
                 if ($GLOBALS['db']->autoExecute($GLOBALS['ecs']->table('airport_order'), $data, 'UPDATE', $where))

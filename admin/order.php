@@ -697,7 +697,11 @@ elseif ($_REQUEST['act'] == 'delivery_info')
 elseif ($_REQUEST['act'] == 'delivery_ship')
 {
     /* 检查权限 */
-    admin_priv('delivery_view');
+    $code = trim($_GET['code']);
+    if($code != 'xiaomaApi' && admin_priv('delivery_view'))
+    {
+        exit();
+    }
 
     /* 定义当前时间 */
     define('GMTIME_UTC', gmtime()); // 获取 UTC 时间戳
@@ -705,22 +709,33 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
     /* 取得参数 */
     $delivery   = array();
     $order_id   = intval(trim($_REQUEST['order_id']));        // 订单id
+    $order_sn   = !empty($_REQUEST['order_sn']) ? mysql_real_escape_string(trim($_REQUEST['order_sn'])) : '';        // 订单号
     $delivery_id   = intval(trim($_REQUEST['delivery_id']));        // 发货单id
     $delivery['invoice_no'] = isset($_REQUEST['invoice_no']) ? trim($_REQUEST['invoice_no']) : '';
     $action_note    = isset($_REQUEST['action_note']) ? trim($_REQUEST['action_note']) : '';
+    $arr['shipping_name']     = isset($_REQUEST['shipping_name']) ? mysql_real_escape_string(trim($_REQUEST['shipping_name'])) : '';
+    $arr['shipping_weight']     = !empty($_REQUEST['shipping_weight']) ? mysql_real_escape_string(trim($_REQUEST['shipping_weight'])) : 0;
 
     /* 根据发货单id查询发货单信息 */
-    if (!empty($delivery_id))
+//    if (!empty($delivery_id))
+//    {
+//        $delivery_order = delivery_order_info($delivery_id);
+//    }
+//    else
+//    {
+//        die('order does not exist');
+//    }
+
+    /* 查询订单信息 */
+    if (empty($order_id))
     {
-        $delivery_order = delivery_order_info($delivery_id);
+        $order = order_info(0, $order_sn);
+        $order_id = intval($order['order_id']);
     }
     else
     {
-        die('order does not exist');
+        $order = order_info($order_id);
     }
-
-    /* 查询订单信息 */
-    $order = order_info($order_id);
 
     /* 检查此单发货商品库存缺货情况 */
     $virtual_goods = array();
@@ -842,9 +857,11 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
     /* 更新发货时间 */
     $order_finish = get_all_delivery_finish($order_id);
     $shipping_status = ($order_finish == 1) ? SS_SHIPPED : SS_SHIPPED_PART;
+    $shipping_status = $code == 'xiaomaApi' ? SS_SHIPPED : $shipping_status;
     $arr['shipping_status']     = $shipping_status;
     $arr['shipping_time']       = GMTIME_UTC; // 发货时间
-    $arr['invoice_no']          = trim($order['invoice_no'] . '<br>' . $invoice_no, '<br>');
+//    $arr['invoice_no']          = trim($order['invoice_no'] . '<br>' . $invoice_no, '<br>');
+    $arr['invoice_no']          = $delivery['invoice_no'];
     update_order($order_id, $arr);
 
     /* 发货单发货记录log */
@@ -904,7 +921,7 @@ elseif ($_REQUEST['act'] == 'delivery_ship')
     /* 操作成功 */
     $links[] = array('text' => $_LANG['09_delivery_order'], 'href' => 'order.php?act=delivery_list');
     $links[] = array('text' => $_LANG['delivery_sn'] . $_LANG['detail'], 'href' => 'order.php?act=delivery_info&delivery_id=' . $delivery_id);
-    sys_msg($_LANG['act_ok'], 0, $links);
+    $code == 'xiaomaApi' ? exit('success') : sys_msg($_LANG['act_ok'], 0, $links);
 }
 
 /*------------------------------------------------------ */
