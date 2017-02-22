@@ -76,7 +76,10 @@ class customsCore
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_POST, $post);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        if (is_array($data) && !empty($data))
+        {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        }
 
         return curl_exec($ch);
     }
@@ -95,7 +98,7 @@ class customsCore
     {
         if (!file_exists(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type))
         {
-            mkdir(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type);
+            mkdir(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type, '0777', true);
         }
         file_put_contents(ROOT_PATH . 'data/customs/airport/' . $path . '/' . $type . '/' . $orderSn . '.' . $file_type, $data);
     }

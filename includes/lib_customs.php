@@ -31,13 +31,13 @@ function get_airport_info($orderId)
             . 'SUM(g.goods_weight*og.goods_number) as weight,'
             . 'COUNT(*) as COUNTOFGOODSTYPE '
             . 'FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ao '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ao.order_sn=o.order_sn '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('users') . ' u ON o.user_id=u.user_id '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' a ON o.province=a.region_id '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' b ON o.city=b.region_id '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('region') . ' c ON o.district=c.region_id '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON o.order_id=og.order_id '
-            . 'INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON g.goods_id=og.goods_id '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ao.order_sn=o.order_sn '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('users') . ' u ON o.user_id=u.user_id '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('region') . ' a ON o.province=a.region_id '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('region') . ' b ON o.city=b.region_id '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('region') . ' c ON o.district=c.region_id '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON o.order_id=og.order_id '
+            . 'LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON g.goods_id=og.goods_id '
             . 'WHERE ao.id= ' . $orderId
             . ' GROUP BY ao.order_sn';
 

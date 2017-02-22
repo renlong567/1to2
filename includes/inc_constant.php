@@ -242,6 +242,8 @@ define('SHIP_LIST', 'cac|city_express|ems|flat|fpd|post_express|post_mail|pressw
 define('CUSTOMS_MODE_JIHUO', 1);    //一般模式（集货）
 define('CUSTOMS_MODE_BEIHUO', 2);    //保税模式（备货）
 
+define('DXPID', 'DXPENT0000011531');    //保税
+
 /* 报关状态 RenLong 2016-05-04 */
 define('AIRPORT_CUSTOMS_FAIL', 0); //失败
 define('AIRPORT_CUSTOMS_OK', 1); //成功
@@ -249,6 +251,7 @@ define('AIRPORT_CUSTOMS_NORMAL', 99); //未申报
 
 /* 报关支付企业信息 RenLong 2016-05-04 */
 define('PAY_TYPE_ALIPAY_CUSTOMS_ZONGBAOQU', 'HENAN'); //综保区
+define('PAY_TYPE_ALIPAY_CUSTOMS_ZONGSHU', 'ZONGSHU'); //海关总署
 
 /* 物流运输信息 */
 define('PACKAGE_TYPE_CUS', 2); //包装类别(海)

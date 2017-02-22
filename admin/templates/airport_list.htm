@@ -32,29 +32,37 @@
     <div class="list-div" id="listDiv">
         <table cellpadding="3" cellspacing="1">
             <tr>
-                <th><input type="checkbox" onclick="sel(this)" /></th>
-                <th><a href="javascript:listTable.sort('order_sn', 'ASC'); ">订单编号{$sort_orderNo}</a></th>
-                <th><a href="javascript:listTable.sort('batchNumbers', 'ASC'); ">批次号</a>{$sort_batchNumbers}</th>
+                <th rowspan="2"><input type="checkbox" onclick="sel(this)" /></th>
+                <th rowspan="2"><a href="javascript:listTable.sort('order_sn', 'ASC'); ">订单编号{$sort_orderNo}</a></th>
+                <th rowspan="2"><a href="javascript:listTable.sort('batchNumbers', 'ASC'); ">批次号</a>{$sort_batchNumbers}</th>
                 <!--<th><a href="javascript:listTable.sort('import_time', 'ASC'); ">导入时间</a>{$sort_import_time}</th>-->
-                <th><a href="javascript:listTable.sort('consignee', 'ASC'); ">收货人</a>{$sort_consignee}</th>
-                <th><a href="javascript:listTable.sort('order_amount', 'ASC'); ">订单金额</a>{$sort_charge}</th>
-                <th><a href="javascript:listTable.sort('goods_amount', 'ASC'); ">货值</a>{$sort_goodsValue}</th>
-                <th><a href="javascript:listTable.sort('logisticsNo', 'ASC'); ">物流运单号</a>{$sort_logisticsNo}</th>
-                <th><a href="javascript:listTable.sort('totalLogisticsNo', 'ASC'); ">总运单号</a>{$sort_totalLogisticsNo}</th>
-                <th><a href="javascript:listTable.sort('paymentNo', 'ASC'); ">支付单号</a>{$sort_paymentNo}</th>
-                <th><a href="javascript:listTable.sort('order_status', 'ASC'); ">订单状态</a></th>
-                <th><a href="javascript:listTable.sort('order_comments', 'ASC'); ">订单原因</a></th>
-                <th>订单报文</th>
-                <th>订单回执</th>
-                <th><a href="javascript:listTable.sort('pay_number_status', 'ASC'); ">支付单状态</a></th>
-                <th><a href="javascript:listTable.sort('pay_comments', 'ASC'); ">支付单原因</a></th>
-                <th>支付单报文</th>
-                <th>支付单回执</th>
-                <th><a href="javascript:listTable.sort('transfer_status', 'ASC'); ">EMS运单状态</a></th>
-                <th><a href="javascript:listTable.sort('transfer_comments', 'ASC'); ">EMS运单原因</a></th>
+                <th rowspan="2"><a href="javascript:listTable.sort('consignee', 'ASC'); ">收货人</a>{$sort_consignee}</th>
+                <th rowspan="2"><a href="javascript:listTable.sort('order_amount', 'ASC'); ">订单金额</a>{$sort_charge}</th>
+                <th rowspan="2"><a href="javascript:listTable.sort('goods_amount', 'ASC'); ">货值</a>{$sort_goodsValue}</th>
+                <th rowspan="2"><a href="javascript:listTable.sort('logisticsNo', 'ASC'); ">物流运单号</a>{$sort_logisticsNo}</th>
+                <th rowspan="2"><a href="javascript:listTable.sort('totalLogisticsNo', 'ASC'); ">总运单号</a>{$sort_totalLogisticsNo}</th>
+                <th rowspan="2"><a href="javascript:listTable.sort('paymentNo', 'ASC'); ">支付单号</a>{$sort_paymentNo}</th>
+                <th colspan="4">订单</th>
+                <th colspan="4">支付单</th>
+                <th colspan="4">运单</th>
+				<th colspan="2">仓储</th>
+                <th rowspan="2">{$lang.handler}</th>
+            </tr>
+            <tr>
+                <th><a href="javascript:listTable.sort('order_status', 'ASC'); ">状态</a></th>
+                <th><a href="javascript:listTable.sort('order_comments', 'ASC'); ">原因</a></th>
+                <th>报文</th>
+                <th>回执</th>
+                <th><a href="javascript:listTable.sort('pay_number_status', 'ASC'); ">状态</a></th>
+                <th><a href="javascript:listTable.sort('pay_comments', 'ASC'); ">原因</a></th>
+                <th>报文</th>
+                <th>回执</th>
+                <th><a href="javascript:listTable.sort('transfer_status', 'ASC'); ">状态</a></th>
+                <th><a href="javascript:listTable.sort('transfer_comments', 'ASC'); ">原因</a></th>
+                <th>报文</th>
+                <th>回执</th>
                 <th><a href="javascript:listTable.sort('st_status', 'ASC'); ">仓储状态</a></th>
-                <th><a href="javascript:listTable.sort('st_comments', 'ASC'); ">仓储原因</a></th>
-                <th>{$lang.handler}</th>
+                <th><a href="javascript:listTable.sort('st_comments', 'ASC'); ">仓储原因</a></th>   
             </tr>
             {foreach from=$res item=n}
             <tr>
@@ -71,13 +79,18 @@
                 <td align="center">{$n.order_status}</td>
                 <td align="center">{$n.order_comments}</td>
                 <td align="center"><a href="/data/customs/airport/send/order/{$n.batchNumbers}/{$n.order_sn}.xml" target="_blank">{$n.order_sn}报文</a></td>
-                <td align="center"><a href="/data/customs/airport/receive/order/{$n.batchNumbers}/{$n.order_sn}.xml" target="_blank">{$n.order_sn}回执</a></td>
+                <td align="center"><a href="/data/customs/airport/receive/order/{$n.batchNumbers}/{$n.order_sn}.xml" target="_blank">回执</a></td>
                 <td align="center">{$n.pay_number_status}</td>
                 <td align="center">{$n.pay_comments}</td>
-                <td align="center"><a href="/data/customs/airport/send/pay/{$n.order_sn}.xml" target="_blank">支付报文</a></td>
-                <td align="center"><a href="/data/customs/airport/receive/pay/{$n.order_sn}.xml" target="_blank">支付回执</a></td>
+                <td align="center"><a href="/data/customs/airport/send/pay/{$n.order_sn}.txt" target="_blank">支付报文</a></td>
+                <td align="center">
+                    <a href="/data/customs/airport/receive/pay/{$n.order_sn}b.xml" target="_blank">回执</a>
+                    <a href="/data/customs/airport/receive/pay/{$n.order_sn}.xml" target="_blank">总署回执</a>
+                </td>
                 <td align="center">{$n.transfer_status}</td>
                 <td align="center">{$n.transfer_comments}</td>
+                <td align="center"><a href="/data/customs/airport/send/{$n.transfer_company_real}/{$n.order_sn}.{$n.file_type}" target="_blank">报文</a></td>
+                <td align="center"><a href="/data/customs/airport/receive/{$n.transfer_company_real}/{$n.order_sn}.{$n.file_type}" target="_blank">回执</a></td>
                 <td align="center">{$n.st_status}</td>
                 <td align="center">{$n.st_comments}</td>
                 <td align="center">
@@ -88,7 +101,7 @@
             {/foreach}
             <tr>
                 <td align="center"><input type="checkbox" onclick="sel(this)" /></td>
-                <td colspan="21" align="right">
+                <td colspan="25" align="right">
                     {include file="page.htm"}
                 </td>
             </tr>

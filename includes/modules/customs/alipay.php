@@ -5,48 +5,54 @@
  * @author RenLong
  * @date 2015-10-08
  */
-if (!defined('IN_ECS')) {
+if (!defined('IN_ECS'))
+{
     die('Hacking attempt');
 }
 
 require_once ROOT_PATH . 'includes/modules/customs/customsCore.php';
 require_once ROOT_PATH . 'includes/lib_payment.php';
 
-class alipay extends customsCore {
+class alipay extends customsCore
+{
 
     private $service = 'alipay.acquire.customs';   //接口名称  String   alipay.acquire.customs
-    private $partner = '';   //合作者身份ID String(16) 
-    public $key = '';  //安全检验码，以数字和字母组成的32位字符
+    private $partner = '2088421675885646';   //合作者身份ID String(16) 
+    public $key = 'x8rnzb4udstdiumutuxgtmjd33z6zzkd';  //安全检验码，以数字和字母组成的32位字符
     private $_input_charset = EC_CHARSET;
     private $sign_type = 'MD5';
     public $sign = '';
     public $out_request_no = '';    //报关流水号 String(32) 
     public $trade_no = '';  //支付宝交易号
-    public $merchant_customs_code = ''; //商户海关备案编号
+    public $merchant_customs_code = '4101962370'; //商户海关备案编号
     public $amount = 0; //报关金额
     public $customs_place = PAY_TYPE_ALIPAY_CUSTOMS_ZONGBAOQU; //海关编号
-    private $merchant_customs_name = ''; //商户海关备案名称  可空
+    private $merchant_customs_name = '河南豫招进出口有限公司'; //商户海关备案名称  可空
     public $is_split = '';  //是否拆单 可空
     public $sub_out_biz_no = '';    //子订单号  可空
 
-    public function __construct($_CFG) {
-        $this->Url = 'https://mapi.alipay.com/gateway.do';
+    public function __construct($_CFG)
+    {
         $payment = get_payment(__CLASS__);
-
-        if ($payment) {
-            $this->partner = $payment['alipay_partner'];
-            $this->key = $payment['alipay_key'];
-        }
-        
+//
+//        if ($payment)
+//        {
+//            $this->partner = $payment['alipay_partner'];
+//            $this->key = $payment['alipay_key'];
+//        }
         $this->merchant_customs_code = $_CFG['cus_cbecode'];
         $this->merchant_customs_name = $_CFG['cus_cbename'];
     }
 
-    public function send() {
+    public function send()
+    {
         $data = $this->getContent();
-
-        $result = $this->postToServer($data, false);
-
+        $this->Url = 'https://mapi.alipay.com/gateway.do?';
+        $this->Url .= http_build_query($data);
+        //保存发送参数
+        $this->createXml($this->out_request_no, serialize($data), 'pay', 'send', 'txt');
+        $result = $this->postToServer('', false);
+        $this->createXml($this->out_request_no, $result, 'pay', 'receive');
         $this->revice($result);
     }
 
@@ -57,28 +63,34 @@ class alipay extends customsCore {
      * @param string $result
      * @return boolean
      */
-    private function revice($result) {
+    private function revice($result)
+    {
         $data = array(
             'pay_number_status' => AIRPORT_CUSTOMS_FAIL,
             'pay_comments' => '',
         );
 
-        $result = str_replace('<?xml version="1.0" encoding="GBK"?>', '<?xml version="1.0" encoding="utf-8"?>', $result);
         $xml = simplexml_load_string($result);
         $xml = json_decode(json_encode($xml), true);
-        switch ($xml['is_success']) {
+        switch ($xml['is_success'])
+        {
             case 'T':
                 //检查签名
                 $o = '';
-                foreach ($xml['response']['alipay'] as $k => $v) {
+                foreach ($xml['response']['alipay'] as $k => $v)
+                {
                     $o .= sprintf('%s=%s&', $k, $v);
                 }
                 $o = rtrim($o, '&');
 
-                if ($xml['sign'] != md5($o . $this->key)) {
+                if ($xml['sign'] != md5($o . $this->key))
+                {
                     $data['pay_comments'] = '签名错误';
-                } else {
-                    switch ($xml['response']['alipay']['result_code']) {
+                }
+                else
+                {
+                    switch ($xml['response']['alipay']['result_code'])
+                    {
                         case 'SUCCESS':
                             $data['pay_number_status'] = AIRPORT_CUSTOMS_OK;
                             $data['pay_comments'] = $xml['response']['alipay']['alipay_declare_no'];
@@ -96,12 +108,13 @@ class alipay extends customsCore {
         }
 
         $table = 'airport_order';
-        $where = 'order_sn';
+        $where = 'paymentNo';
 
-        return $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table($table), $data, 'UPDATE', $where . '=' . $this->out_request_no);
+        return $GLOBALS['db']->autoExecute($GLOBALS['ecs']->table($table), $data, 'UPDATE', $where . '=\'' . $this->trade_no . '\'');
     }
 
-    private function getContent() {
+    private function getContent()
+    {
         $data = array(
             'service' => $this->service,
             'partner' => $this->partner,
@@ -119,7 +132,8 @@ class alipay extends customsCore {
         ksort($data);
 
         $str = '';
-        foreach ($data as $key => $value) {
+        foreach ($data as $key => $value)
+        {
             $str .= sprintf('%s=%s&', $key, $value);
         }
         $str = rtrim($str, '&');
