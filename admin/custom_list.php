@@ -449,7 +449,6 @@ elseif ($_REQUEST['act'] == 'excel_order_action')
                     $data_order['taxfee'] = $data['tax']; // 进口行邮税
                     $data_order['batchNumbers'] = trim($sheet->getCellByColumnAndRow(1, $i)->getValue()); // 批次号
                     $data_order['totalLogisticsNo'] = trim($sheet->getCellByColumnAndRow(2, $i)->getValue()); // 总运单号
-                    $data_order['paymentNo'] = trim($sheet->getCellByColumnAndRow(3, $i)->getValue()); // 交易支付号
 
                     $data_order = array_map(strip_tags, $data_order);
                     $data_order = array_map(mysql_real_escape_string, $data_order);

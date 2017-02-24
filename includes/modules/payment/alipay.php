@@ -12,13 +12,12 @@
  * $Author: douqinghua $
  * $Id: alipay.php 17217 2011-01-19 06:29:08Z douqinghua $
  */
-
 if (!defined('IN_ECS'))
 {
     die('Hacking attempt');
 }
 
-$payment_lang = ROOT_PATH . 'languages/' .$GLOBALS['_CFG']['lang']. '/payment/alipay.php';
+$payment_lang = ROOT_PATH . 'languages/' . $GLOBALS['_CFG']['lang'] . '/payment/alipay.php';
 
 if (file_exists($payment_lang))
 {
@@ -33,19 +32,19 @@ if (isset($set_modules) && $set_modules == TRUE)
     $i = isset($modules) ? count($modules) : 0;
 
     /* 代码 */
-    $modules[$i]['code']    = basename(__FILE__, '.php');
+    $modules[$i]['code'] = basename(__FILE__, '.php');
 
     /* 描述对应的语言项 */
-    $modules[$i]['desc']    = 'alipay_desc';
+    $modules[$i]['desc'] = 'alipay_desc';
 
     /* 是否支持货到付款 */
-    $modules[$i]['is_cod']  = '0';
+    $modules[$i]['is_cod'] = '0';
 
     /* 是否支持在线支付 */
-    $modules[$i]['is_online']  = '1';
+    $modules[$i]['is_online'] = '1';
 
     /* 作者 */
-    $modules[$i]['author']  = 'ECSHOP TEAM';
+    $modules[$i]['author'] = 'ECSHOP TEAM';
 
     /* 网址 */
     $modules[$i]['website'] = 'http://www.alipay.com';
@@ -54,11 +53,11 @@ if (isset($set_modules) && $set_modules == TRUE)
     $modules[$i]['version'] = '1.0.2';
 
     /* 配置信息 */
-    $modules[$i]['config']  = array(
-        array('name' => 'alipay_account',           'type' => 'text',   'value' => ''),
-        array('name' => 'alipay_key',               'type' => 'text',   'value' => ''),
-        array('name' => 'alipay_partner',           'type' => 'text',   'value' => ''),
-        array('name' => 'alipay_pay_method',        'type' => 'select', 'value' => '')
+    $modules[$i]['config'] = array(
+        array('name' => 'alipay_account', 'type' => 'text', 'value' => ''),
+        array('name' => 'alipay_key', 'type' => 'text', 'value' => ''),
+        array('name' => 'alipay_partner', 'type' => 'text', 'value' => ''),
+        array('name' => 'alipay_pay_method', 'type' => 'select', 'value' => '')
     );
 
     return;
@@ -80,6 +79,7 @@ class alipay
      */
     function alipay()
     {
+        
     }
 
     function __construct()
@@ -105,7 +105,8 @@ class alipay
 
         $real_method = $payment['alipay_pay_method'];
 
-        switch ($real_method){
+        switch ($real_method)
+        {
             case '0':
                 $service = 'trade_create_by_buyer';
                 break;
@@ -120,44 +121,44 @@ class alipay
         $extend_param = 'isv^sh22';
 
         $parameter = array(
-            'extend_param'      => $extend_param,
-            'service'           => $service,
-            'partner'           => $payment['alipay_partner'],
+            'extend_param' => $extend_param,
+            'service' => $service,
+            'partner' => $payment['alipay_partner'],
             //'partner'           => ALIPAY_ID,
-            '_input_charset'    => $charset,
-            'notify_url'        => return_url(basename(__FILE__, '.php')),
-            'return_url'        => return_url(basename(__FILE__, '.php')),
+            '_input_charset' => $charset,
+            'notify_url' => return_url(basename(__FILE__, '.php')),
+            'return_url' => return_url(basename(__FILE__, '.php')),
             /* 业务参数 */
-            'subject'           => $order['order_sn'],
-            'out_trade_no'      => $order['order_sn'] . $order['log_id'],
-            'price'             => $order['order_amount'],
-            'quantity'          => 1,
-            'payment_type'      => 1,
+            'subject' => $order['order_sn'],
+            'out_trade_no' => $order['order_sn'],
+            'price' => $order['order_amount'],
+            'quantity' => 1,
+            'payment_type' => 1,
             /* 物流参数 */
-            'logistics_type'    => 'EXPRESS',
-            'logistics_fee'     => 0,
+            'logistics_type' => 'EXPRESS',
+            'logistics_fee' => 0,
             'logistics_payment' => 'BUYER_PAY_AFTER_RECEIVE',
             /* 买卖双方信息 */
-            'seller_email'      => $payment['alipay_account']
+            'seller_email' => $payment['alipay_account']
         );
 
         ksort($parameter);
         reset($parameter);
 
         $param = '';
-        $sign  = '';
+        $sign = '';
 
         foreach ($parameter AS $key => $val)
         {
-            $param .= "$key=" .urlencode($val). "&";
-            $sign  .= "$key=$val&";
+            $param .= "$key=" . urlencode($val) . "&";
+            $sign .= "$key=$val&";
         }
 
         $param = substr($param, 0, -1);
-        $sign  = substr($sign, 0, -1). $payment['alipay_key'];
+        $sign = substr($sign, 0, -1) . $payment['alipay_key'];
         //$sign  = substr($sign, 0, -1). ALIPAY_AUTH;
 
-        $button = '<div style="text-align:center"><input type="button" onclick="window.open(\'https://mapi.alipay.com/gateway.do?'.$param. '&sign='.md5($sign).'&sign_type=MD5\')" value="' .$GLOBALS['_LANG']['pay_button']. '" /></div>';
+        $button = '<div style="text-align:center"><input type="button" onclick="window.open(\'https://mapi.alipay.com/gateway.do?' . $param . '&sign=' . md5($sign) . '&sign_type=MD5\')" value="' . $GLOBALS['_LANG']['pay_button'] . '" /></div>';
 
         return $button;
     }
@@ -169,22 +170,22 @@ class alipay
     {
         if (!empty($_POST))
         {
-            foreach($_POST as $key => $data)
+            foreach ($_POST as $key => $data)
             {
                 $_GET[$key] = $data;
             }
         }
-        $payment  = get_payment($_GET['code']);
+        $payment = get_payment($_GET['code']);
         $seller_email = rawurldecode($_GET['seller_email']);
-        $order_sn = str_replace($_GET['subject'], '', $_GET['out_trade_no']);
-        $order_sn = trim($order_sn);
+        $order_sn = trim($_GET['out_trade_no']);
+        $trade_no = trim($_GET['trade_no']);
 
         /* 检查数字签名是否正确 */
         ksort($_GET);
         reset($_GET);
 
         $sign = '';
-        foreach ($_GET AS $key=>$val)
+        foreach ($_GET AS $key => $val)
         {
             if ($key != 'sign' && $key != 'sign_type' && $key != 'code')
             {
@@ -200,30 +201,27 @@ class alipay
         }
 
         /* 检查支付的金额是否相符 */
-        if (!check_money($order_sn, $_GET['total_fee']))
+        if (!$this->checkOrderAmount($order_sn, $_GET['total_fee']))
         {
             return false;
         }
 
         if ($_GET['trade_status'] == 'WAIT_SELLER_SEND_GOODS')
         {
-            /* 改变订单状态 RenLong 2016-05-03 */
-            order_paid($order_sn, PS_PAYED, '', __CLASS__, $_GET['trade_no']);
-
+            /* 改变订单状态 RenLong 2017-02-23 */
+            order_paid_plus($order_sn, PS_PAYED, '', __CLASS__, $trade_no);
             return true;
         }
         elseif ($_GET['trade_status'] == 'TRADE_FINISHED')
         {
-            /* 改变订单状态 RenLong 2016-05-03 */
-            order_paid($order_sn, PS_PAYED, '', __CLASS__, $_GET['trade_no']);
-
+            /* 改变订单状态 RenLong 2017-02-23 */
+            order_paid_plus($order_sn, PS_PAYED, '', __CLASS__, $trade_no);
             return true;
         }
         elseif ($_GET['trade_status'] == 'TRADE_SUCCESS')
         {
-            /* 改变订单状态 RenLong 2016-05-03 */
-            order_paid($order_sn, PS_PAYED, '', __CLASS__, $_GET['trade_no']);
-
+            /* 改变订单状态 RenLong 2017-02-23 */
+            order_paid_plus($order_sn, PS_PAYED, '', __CLASS__, $trade_no);
             return true;
         }
         else
@@ -231,6 +229,29 @@ class alipay
             return false;
         }
     }
-}
 
-?>
+        /**
+     * @desc 检查订单金额是否一致
+     * @author RenLong
+     * @date 2017-02-23
+     * @param string $orderSn
+     * @param int $payAmount
+     * @return boolean
+     */
+    private function checkOrderAmount($orderSn = '', $payAmount = 0)
+    {
+        $orderInfo = order_info(0, $orderSn);
+
+        if ($orderInfo['pay_status'] == PS_PAYED)
+        {
+            return true;
+        }
+
+        if ($orderInfo['order_amount'] != $payAmount)
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
