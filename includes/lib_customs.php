@@ -24,7 +24,9 @@ function get_airport_info($orderId)
             . 'o.pay_name,'
             . 'o.order_id,'
             . 'o.user_id,'
-            . 'o.idtype,'
+            . 'o.customerid,'
+            . 'o.tel,'
+            . 'o.mobile,'
             . 'a.region_name as province,'
             . 'b.region_name as city,'
             . 'c.region_name as district,'
@@ -44,7 +46,7 @@ function get_airport_info($orderId)
     $orderInfo = $GLOBALS['db']->getRow($sql);
 
     //格式化数据
-    $orderInfo['order_addtime'] = local_date('Y-m-d H:i:s', $orderInfo['order_addtime']);
+    $orderInfo['order_addtime'] = local_date('YmdHis', $orderInfo['order_addtime']);
     $orderInfo['pay_time'] = local_date('Y-m-d H:i:s', $orderInfo['pay_time']);
     $orderInfo['st_entry_time'] = local_date('Y-m-d H:i:s', $orderInfo['st_entry_time']);
 

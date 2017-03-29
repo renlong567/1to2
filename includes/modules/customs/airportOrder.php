@@ -60,7 +60,7 @@ class airportOrder extends customsCore
     public $ecpcodeinsp = '';   //电商平台检验检疫CIQ备案编号 ecpcodeinsp C..50   否   
     public $trepcodeinsp = '';  //物流企业CIQ检验检疫备案编号 trepcodeinsp    C..50   是   
     public $submittime = '';    //订单提交时间  submittime  C..14   是   例：20150526175430
-    public $tradecompany = '';  //贸易国别检验检疫  tradecompany    C3  是   
+    public $tradecompany = '156';  //贸易国别检验检疫  tradecompany    C3  是   
     public $totalfeeunit = '';  //总费用单位检验检疫 totalfeeunit    C..20   是   
     public $countofgoodstype = '';  //商品种类数检验检疫 countofgoodstype    C..10   是   
     public $weight = 0;    //毛重检验检疫    weight  N19,4   是   
@@ -88,8 +88,13 @@ class airportOrder extends customsCore
         $this->ecpcodeinsp = $_CFG['cus_ecpcodeinsp'];
         $this->trepcodeinsp = $_CFG['cus_trepcodeinsp'];
         $this->totalfeeunit = $_CFG['cus_totalfeeunit'];
+        $this->senderuseraddress = $_CFG['cus_senderuseraddress'];
+        $this->senderusername = $_CFG['cus_senderusername'];
+        $this->senderusertelephone = $_CFG['cus_senderusertelephone'];
         $this->sendusercountryinsp = $_CFG['cus_sendusercountryinsp'];
+        $this->collusercountryinsp = $_CFG['cus_collusercountryinsp'];
         $this->lmsno = $_CFG['cus_lmsno'];
+        $this->manualno = $_CFG['cus_manualno'];
         $this->payCode = $_CFG['cus_payenterprisecode'];
         $this->payName = $_CFG['cus_payenterprisename'];
     }
@@ -232,18 +237,17 @@ ETO;
         $this->otherfee = $order['other'];
         $this->taxTotal = $order['taxfee'];
         $this->acturalPaid = $this->ordersum = $order['order_amount'];
-        $this->buyerRegNo = $this->consigneeTelephone = $this->buyerregno = $this->purchasertelephone = $order['mobile'];
+        $this->buyerRegNo = $this->consigneeTelephone = $this->buyerregno = $this->purchasertelephone = !empty($order['tel']) ? $order['tel'] : $order['mobile'];
         $this->buyerName = $this->consignee = $this->purchasername = $order['consignee'];
-        $this->buyerIdNumber = $order['consignee_idc'];
+        $this->buyerIdNumber = $order['customerid'];
         $this->paynumber = $order['paymentNo'];
         $this->batchNumbers = $order['batchNumbers'];
         $this->consigneeAddress = $order['address'];
         $this->note = $order['note'];
         $this->submittime = $order['order_addtime'];
-        $this->weight = $order['weight'];
-        $this->netweight = $order['netweight'];
+        $this->weight = $order['weight'] + 0.125;
+        $this->netweight = $order['weight'];
         $this->countofgoodstype = $order['COUNTOFGOODSTYPE'];
-        $this->manualno = $order['MANUALNO'];
     }
 
     private function getGoodsByOrderId()
