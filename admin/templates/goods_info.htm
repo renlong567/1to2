@@ -249,7 +249,7 @@
             <td><input type="text" name="srccountryinsp" value="{$goods.srccountryinsp}" size="50" /></td>
           </tr>
           <tr>
-            <td class="label">原产国（海关代码） *  </td>
+            <td class="label">原产国（海关代码） </td>
             <td><input type="text" name="sourceproducercountry" value="{$goods.sourceproducercountry}" size="10" /></td>
           </tr>
 
@@ -259,7 +259,7 @@
             <td><input type="text" name="goodname" value="{$goods.goodname}" size="50" /></td>
           </tr>
           <tr>
-            <td class="label">关联H2010项号 * </td>
+            <td class="label">关联H2010项号</td>
             <td><input type="text" name="gno" value="{$goods.gno}" size="50" /></td>
           </tr>
 
@@ -268,8 +268,20 @@
             <td><input type="text" name="goodnameenglish" value="{$goods.goodnameenglish}" size="50" /></td>
           </tr>
           <tr>
-            <td class="label">重量单位代码 * </td>
+            <td class="label">毛重</td>
+            <td><input type="text" name="weight" value="{$goods.weight}" size="20" /> <select><option value="1">千克</option></select><span class="require-field">*</span></td>
+          </tr>
+        <tr>
+          <td class="label">净重</td>
+          <td><input type="text" name="goods_netweight" value="{$goods.goods_netweight}" size="20" /> <select><option value="1">千克</option></select><span class="require-field">*</span></td>
+        </tr>
+          <tr>
+            <td class="label">重量单位代码</td>
             <td><input type="text" name="weightunit" value="{$goods.weightunit}" size="50" /></td>
+          </tr>
+          <tr>
+            <td class="label">原产国（海关代码） </td>
+            <td><input type="text" name="sourceproducercountry" value="{$goods.sourceproducercountry}" size="10" /></td>
           </tr>
           <tr>
             <td class="label">商品描述</td>
@@ -289,13 +301,9 @@
         <table width="90%" id="mix-table" style="display:none" align="center">
           {if $code eq ''}
           <tr>
-            <td class="label">商品毛重</td>
-            <td><input type="text" name="goods_weight" value="{$goods.goods_weight_by_unit}" size="20" /> <select name="weight_unit">{html_options options=$unit_list selected=$weight_unit}</select><span class="require-field">*</span></td>
+            <td class="label">{$lang.lab_goods_weight}</td>
+            <td><input type="text" name="goods_weight" value="{$goods.goods_weight_by_unit}" size="20" /> <select name="weight_unit">{html_options options=$unit_list selected=$weight_unit}</select></td>
           </tr>
-        <tr>
-          <td class="label">商品净重</td>
-          <td><input type="text" name="goods_netweight" value="{$goods.goods_netweight_by_unit}" size="20" /> <select name="weight_netunit">{html_options options=$unit_list selected=$netweight_unit}</select><span class="require-field">*</span></td>
-        </tr>
         {/if}
           {if $cfg.use_storage}
           <tr>
@@ -551,12 +559,11 @@
   function validate(goods_id)
   {
         var validator = new Validator('theForm');
-        var goods_sn  = document.forms['theForm'].elements['goods_sn'].value;
+      var goods_sn  = document.forms['theForm'].elements['goods_sn'].value;
 
-        validator.required('goods_name', goods_name_not_null);
-        validator.required('goods_weight', '商品毛重不能为空。');//WangMin 2015-08-06
-        validator.required('goods_netweight', '商品净重不能为空。');//WangMin 2015-08-06
-
+      validator.required('goods_name', goods_name_not_null);
+        validator.required('weight', '商品毛重不能为空。');//RenLong 2017-03-30
+        validator.required('goods_netweight', '商品净重不能为空。');//RenLong 2017-03-30
       if (document.forms['theForm'].elements['cat_id'].value == 0)
       {
           validator.addErrorMsg(goods_cat_not_null);
