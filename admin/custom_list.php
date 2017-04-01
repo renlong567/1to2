@@ -173,6 +173,8 @@ elseif ($_REQUEST['act'] == 'customsAction')
 
     //操作类型,1新增，2修改，3删除
     $modifyMark = intval($_POST['modifyMark']);
+    //总毛重
+    $totalWeight = trim($_POST['totalWeight']);
     //进出境日期
     $jcbOrderTime = empty($_POST['jcbOrderTime']) ? local_date('Y-m-d', $_SERVER['REQUEST_TIME']) : trim($_POST['jcbOrderTime']);
     //目标口岸
@@ -204,6 +206,12 @@ elseif ($_REQUEST['act'] == 'customsAction')
 //                $airportOrder->collusercountryinsp = BEIHUO_SEND_COUNTRY_CODE_CIQ;
 //                break;
         }
+
+        if (!handle_total_weight_of_orders($totalWeight, $_POST['order']))
+        {
+            sys_msg('订单毛重计算失败,请检查数据', 1);
+        }
+
         foreach ($_POST['order'] as $v)
         {
             $airportOrder->orderId = $v;

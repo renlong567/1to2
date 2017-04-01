@@ -30,7 +30,7 @@ function get_airport_info($orderId)
             . 'a.region_name as province,'
             . 'b.region_name as city,'
             . 'c.region_name as district,'
-            . 'SUM(g.weight*og.goods_number) as weight,'
+//            . 'SUM(g.weight*og.goods_number) as weight,'
             . 'SUM(g.goods_netweight*og.goods_number) as goods_netweight,'
             . 'COUNT(*) as COUNTOFGOODSTYPE '
             . 'FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ao '
@@ -416,4 +416,65 @@ function customs_list()
     $arr = array('res' => $res, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 
     return $arr;
+}
+
+/**
+ * @desc 计算订单毛重
+ * @since 
+ * 第一步：（总毛重-总净重）= 需要均分的总毛重，需要均分的总毛重÷订单总量=每单需要均分的毛重（保留两位小数，后面的数值全舍去）。
+  第二步：需要均分的总毛重-（每单需要均分的毛重*订单总量）=剩余未分配的毛重；
+  第三步：把剩余未分配的毛重加到任意一单的毛重上去
+  这样一来就OK了，保证毛重大于净重，也能把毛重均分了
+ * @author RenLong
+ * @date 2017-04-01
+ * @param float $totalWeight 总毛重
+ * @param [] $orders 订单ID
+ * @return boolean
+ */
+function handle_total_weight_of_orders($totalWeight = 0, $orders = array())
+{
+    if (empty($totalWeight) || !is_numeric($totalWeight) || empty($orders))
+    {
+        return false;
+    }
+
+    $sql = 'SELECT '
+            . 'ao.id,'
+            . 'ao.order_sn,'
+            . 'SUM(g.goods_netweight*og.goods_number) as goods_netweight'
+            . ' FROM ' . $GLOBALS['ecs']->table('airport_order') . ' ao '
+            . ' LEFT JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ao.order_sn=o.order_sn '
+            . ' LEFT JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON o.order_id=og.order_id '
+            . ' LEFT JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON g.goods_id=og.goods_id '
+            . ' WHERE ' . db_create_in($orders, 'ao.id')
+            . ' GROUP BY ao.order_sn';
+
+    $orderInfo = $GLOBALS['db']->getAll($sql);
+
+    if ($orderInfo)
+    {
+        foreach ($orderInfo as $value)
+        {
+            $totalNetweight += $value['goods_netweight'];
+        }
+
+        $orderCount = count($orderInfo);
+
+        $shareTotal = $totalWeight - $totalNetweight;
+        $shareTotalTemp = mb_substr(round($shareTotal / $orderCount, 3), 0, -1);
+        $lastShareTotal = $shareTotal - $shareTotalTemp * $orderCount;
+
+        $sql = 'UPDATE ' . $GLOBALS['ecs']->table('airport_order') . ' SET weight=CASE id';
+        foreach ($orderInfo as $key => $value)
+        {
+            $temp = $key == 0 ? $lastShareTotal : 0;
+            $temp += $value['goods_netweight'] + $shareTotalTemp;
+            $sql .= sprintf(' WHEN \'%s\' THEN \'%s\'', $value['id'], $temp);
+        }
+        $sql .= ' END WHERE ' . db_create_in($orders, 'id');
+
+        return $GLOBALS['db']->query($sql);
+    }
+
+    return false;
 }
