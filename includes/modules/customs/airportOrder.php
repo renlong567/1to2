@@ -270,7 +270,8 @@ ETO;
                 . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_info') . ' o ON ag.order_sn=o.order_sn'
                 . ' INNER JOIN ' . $GLOBALS['ecs']->table('order_goods') . ' og ON og.order_id=o.order_id'
                 . ' INNER JOIN ' . $GLOBALS['ecs']->table('goods') . ' g ON og.goods_id=g.goods_id'
-                . ' WHERE ag.id = ' . $this->orderId;
+                . ' WHERE ag.id = ' . $this->orderId
+                . ' ORDER BY g.itemno ASC';
 
         return $GLOBALS['db']->getAll($sql);
     }
