@@ -1,6 +1,7 @@
 {if $full_page}
 {include file="pageheader.htm"}
 {insert_scripts files="../js/utils.js,listtable.js"}
+<script type="text/javascript" src="js/jquery-1.8.3-min.js"></script>
 <script type="text/javascript" src="/js/calendar.php?lang={$cfg_lang}"></script>
 <link href="/js/calendar/calendar.css" rel="stylesheet" type="text/css" />
 <div class="form-div">
@@ -45,7 +46,7 @@
                 <th colspan="4">订单</th>
                 <th colspan="4">支付单</th>
                 <th colspan="4">运单</th>
-				<th colspan="2">仓储</th>
+                <th colspan="2">仓储</th>
                 <th rowspan="2">{$lang.handler}</th>
             </tr>
             <tr>
@@ -110,53 +111,127 @@
     </div>
     <div style="margin-top:5px">
         <select id="operate" name="operate">
-            <option value="o2">申报订单</option>
+            <option value="o2">生成订单报文</option>
             <option value="o6">申报支付单</option>
-            <option value="o7">申报EMS(每次最多1000单)</option>
+            <option value="o1">申报运单</option>
             <option value="o3">申报仓储</option>
             <option value="batch_del">批量删除</option>
         </select>
-        <select name="target">
+        <select class="transfer" name="transfer" style="display:none;" disabled="disabled">
+            <option value="t3">申报易通</option>
+            <option value="t2">申报EMS(每次最多1000单)</option>
+        </select>
+        <select class="transfer" name="OMS" style="display:none;" disabled="disabled">
+            <option value="3300810000">百世汇通【一般集货】</option>
+            <option value="4100606550">中通【保税备货】</option>
+        </select>
+        <select name="target" id="target">
             <option value="zongbao">综保</option>
         </select>
-        <select name="modifyMark">
+        <select name="modifyMark" id="modifyMark">
             <option value="1">新增</option>
             <option value="2">修改</option>
         </select>
-        <select name="billmode">
+        <select name="billmode" id="billmode">
             <option value="1">一般模式(集货)</option>
             <option value="2">保税模式(备货)</option>
         </select>
-        总毛重（KG）：<input name="totalWeight" type="text" id="totalWeight" size="20" placeholder="总毛重（KG）" value="" />
+        <span class="totalWeight">总毛重（KG）：</span><input name="totalWeight" type="text" class="totalWeight" size="20" placeholder="总毛重（KG）" value="" />
         进/出境日期：<input name="jcbOrderTime" type="text" id="jcbOrderTime" size="20" placeholder="进/出境日期" value="" />
         <input name="selbtn2" type="button" id="selbtn2" onclick="return showCalendar('jcbOrderTime', '%Y-%m-%d', false, false, 'selbtn2');" value="{$lang.btn_select}" class="button" />&nbsp;&nbsp;&nbsp;
         <input name="send" type="submit" id="btnSubmit" value="确定" class="button" />
     </div>
 </form>
 <script>
-            listTable.recordCount = {$record_count};
-            listTable.pageCount = {$page_count};
+    listTable.recordCount = {$record_count};
+    listTable.pageCount = {$page_count};
     {foreach from = $filter item = item key = key}
     listTable.filter.{$key} = '{$item}';
     {/foreach}
 
-            function sel(i){
-            var order = document.getElementsByName('order[]');
-                    if (i.checked == true){
-            for (var i = 0; i < order.length; i++){
-            order[i].checked = true;
-            }
-            } else if (i.checked == false){
-            for (var i = 0; i < order.length; i++){
-            order[i].checked = false;
-            }
-            }
-            }
+$(document).ready(function(){
+    $("#operate").change(function() {
+        switch($("#operate").val()){
+            case "o2":
+                $(".transfer").hide();
+                $(".transfer").attr("disabled","disabled");
+                $("#target").show();
+                $("#target").removeAttr("disabled","disabled");
+                $("#modifyMark").show();
+                $("#modifyMark").removeAttr("disabled","disabled");
+                $("#billmode").show();
+                $("#billmode").removeAttr("disabled","disabled");
+                $(".totalWeight").show();
+                $(".totalWeight").removeAttr("disabled","disabled");
+            break;
+            case "o3":
+                $(".transfer").hide();
+                $(".transfer").attr("disabled","disabled");
+                $("#target").hide();
+                $("#target").attr("disabled","disabled");
+                $("#modifyMark").show();
+                $("#modifyMark").removeAttr("disabled","disabled");
+                $("#billmode").hide();
+                $("#billmode").attr("disabled","disabled");
+                $(".totalWeight").hide();
+                $(".totalWeight").attr("disabled","disabled");
+            break;
+            case "o6":
+                $(".transfer").hide();
+                $(".transfer").attr("disabled","disabled");
+                $("#target").show();
+                $("#target").removeAttr("disabled","disabled");
+                $("#modifyMark").show();
+                $("#modifyMark").removeAttr("disabled","disabled");
+                $("#billmode").hide();
+                $("#billmode").attr("disabled","disabled");
+                $(".totalWeight").hide();
+                $(".totalWeight").attr("disabled","disabled");
+            break;
+            case "o1":
+                $(".transfer").show();
+                $(".transfer").removeAttr("disabled","disabled");
+                $("#target").show();
+                $("#target").removeAttr("disabled","disabled");
+                $("#modifyMark").show();
+                $("#modifyMark").removeAttr("disabled","disabled");
+                $("#billmode").show();
+                $("#billmode").removeAttr("disabled","disabled");
+                $(".totalWeight").hide();
+                $(".totalWeight").attr("disabled","disabled");
+            break;
+            case "batch_del":
+                $(".transfer").hide();
+                $(".transfer").attr("disabled","disabled");
+                $("#target").hide();
+                $("#target").attr("disabled","disabled");
+                $("#modifyMark").hide();
+                $("#modifyMark").attr("disabled","disabled");
+                $("#billmode").hide();
+                $("#billmode").attr("disabled","disabled");
+                $(".totalWeight").hide();
+                $(".totalWeight").attr("disabled","disabled");
+            break;
+        }
+    });
+});
+    function sel(i){
+    var order = document.getElementsByName('order[]');
+    if (i.checked == true){
+    for (var i = 0; i < order.length; i++){
+    order[i].checked = true;
+    }
+    } else if (i.checked == false){
+    for (var i = 0; i < order.length; i++){
+    order[i].checked = false;
+    }
+    }
+    }
 
     function check() {
     var snArray = new Array();
-            var eles = document.forms['listForm'].elements;
-            for (var i = 0; i < eles.length; i++) {
+    var eles = document.forms['listForm'].elements;
+    for (var i = 0; i < eles.length; i++) {
     if (eles[i].tagName == 'INPUT' && eles[i].type == 'checkbox' && eles[i].checked && eles[i].value != 'on') {
     snArray.push(eles[i].value);
     }
@@ -165,7 +240,7 @@
     if (snArray.length == 0)
     {
     alert("请选择订单");
-            return false;
+    return false;
     }
     else
     {
@@ -178,13 +253,13 @@
      */
     function searchCustoms() {
     listTable.filter['orderNo'] = Utils.trim(document.forms['searchForm'].elements['orderNo'].value);
-            listTable.filter['consignee'] = Utils.trim(document.forms['searchForm'].elements['consignee'].value);
-            listTable.filter['batchNumbers'] = Utils.trim(document.forms['searchForm'].elements['batchNumbers'].value);
-            listTable.filter['logisticsNo'] = Utils.trim(document.forms['searchForm'].elements['logisticsNo'].value);
-            listTable.filter['customsType'] = document.forms['searchForm'].elements['customsType'].value;
-            listTable.filter['customs_status'] = document.forms['searchForm'].elements['customs_status'].value;
-            listTable.filter['page'] = 1;
-            listTable.loadList();
+    listTable.filter['consignee'] = Utils.trim(document.forms['searchForm'].elements['consignee'].value);
+    listTable.filter['batchNumbers'] = Utils.trim(document.forms['searchForm'].elements['batchNumbers'].value);
+    listTable.filter['logisticsNo'] = Utils.trim(document.forms['searchForm'].elements['logisticsNo'].value);
+    listTable.filter['customsType'] = document.forms['searchForm'].elements['customsType'].value;
+    listTable.filter['customs_status'] = document.forms['searchForm'].elements['customs_status'].value;
+    listTable.filter['page'] = 1;
+    listTable.loadList();
     }
 </script>
 {/if}

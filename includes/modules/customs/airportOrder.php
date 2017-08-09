@@ -238,7 +238,7 @@ ETO;
         $this->otherfee = $order['other'];
         $this->taxTotal = $order['taxfee'];
         $this->acturalPaid = $this->ordersum = $order['order_amount'];
-        $this->buyerRegNo = $this->consigneeTelephone = $this->buyerregno = $this->purchasertelephone = !empty($order['tel']) ? $order['tel'] : $order['mobile'];
+        $this->buyerRegNo = $this->consigneeTelephone = $this->buyerregno = $this->purchasertelephone = $order['mobile'];
         $this->buyerName = $this->consignee = $this->purchasername = $order['consignee'];
         $this->buyerIdNumber = $order['customerid'];
         $this->paynumber = $order['paymentNo'];

@@ -222,26 +222,46 @@ elseif ($_REQUEST['act'] == 'customsAction')
         $link[] = array('text' => $_LANG['go_back'], 'href' => basename(__FILE__) . '?act=list');
         sys_msg('报文已生成', 0, $link, false);
     }
-    //EMS运单接口
-    elseif ($_POST['operate'] == 'o7')
+    //运单接口
+    elseif ($_POST['operate'] == 'o1')
     {
-        require_once ROOT_PATH . 'includes/modules/customs/airportEMS.php';
-
-        $airportEMS = new airportEMS($_CFG);
-        $airportEMS->orderIdArr = $_POST['order'];
-        $airportEMS->JCBORDERTIME = $jcbOrderTime;
-        $airportEMS->MODIFYMARK = $modifyMark;
-        $airportEMS->BILLMODE = $billmode;
-        switch ($target)
+        switch ($_POST['transfer'])
         {
-            case 'zongbao':
-                $airportEMS->JCBORDERPORT = JCB_ORDER_PORT_ZONGBAO;
-                $airportEMS->JCBORDERPORTINSP = JCB_ORDER_PORT_INSP_ZONGBAO;
-                $airportEMS->APPLYPORTINSP = APPLY_PORT_INSP_ZONGBAO;
-                $airportEMS->DECLAREPORT = DECLARE_PORT_ZONGBAO;
+            //EMS
+            case 't1':
+                require_once ROOT_PATH . 'includes/modules/customs/airportEMS.php';
+
+                $airportEMS = new airportEMS($_CFG);
+                $airportEMS->orderIdArr = $_POST['order'];
+                $airportEMS->JCBORDERTIME = $jcbOrderTime;
+                $airportEMS->MODIFYMARK = $modifyMark;
+                $airportEMS->BILLMODE = $billmode;
+                switch ($target)
+                {
+                    case 'zongbao':
+                        $airportEMS->JCBORDERPORT = JCB_ORDER_PORT_ZONGBAO;
+                        $airportEMS->JCBORDERPORTINSP = JCB_ORDER_PORT_INSP_ZONGBAO;
+                        $airportEMS->APPLYPORTINSP = APPLY_PORT_INSP_ZONGBAO;
+                        $airportEMS->DECLAREPORT = DECLARE_PORT_ZONGBAO;
+                        break;
+                }
+                $airportEMS->send();
+                break;
+            //Eton
+            case 't3':
+                //易通接口
+                require_once ROOT_PATH . 'includes/modules/customs/airportEton.php';
+                $airportEton = new airportEton($_CFG);
+                $airportEton->trepcodeinsp = (string)trim($_POST['OMS']);
+
+                foreach ($_POST['order'] as $v)
+                {
+                    $airportEton->order_id = $v;
+                    $airportEton->billmode = $billmode;
+                    $airportEton->send();
+                }
                 break;
         }
-        $airportEMS->send();
 
         sys_msg('提交完成，请返回查看结果');
     }

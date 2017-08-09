@@ -50,6 +50,7 @@ function get_airport_info($orderId)
     $orderInfo['order_addtime'] = local_date('YmdHis', $orderInfo['order_addtime']);
     $orderInfo['pay_time'] = local_date('Y-m-d H:i:s', $orderInfo['pay_time']);
     $orderInfo['st_entry_time'] = local_date('Y-m-d H:i:s', $orderInfo['st_entry_time']);
+    $orderInfo['mobile'] = !empty($orderInfo['tel']) ? $orderInfo['tel'] : $orderInfo['mobile'];
 
     return $orderInfo;
 }
