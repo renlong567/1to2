@@ -1,0 +1,19 @@
+后台地址：
+http://www.onetotwo.cc/admin
+帐号：admin
+密码：admin123
+
+FTP：
+账号：qxu2060540240
+密码：ecmobancom12345aA
+IP:139.129.181.241
+
+数据库信息：
+
+主机地址： 139.129.181.241
+FTP账户：  qxu2060540240
+FTP密码：  ecmobancom12345aA
+数据库地址：qdm106277472.my3w.com
+phpMyAdmin地址：http://phpmyadmin.hichina.com/phpmyadmin/index.php?serverid=qdm106277472.my3w.com&uid=qdm106277472
+数据库账号：qdm106277472
+数据库密码：cy8zzr0i63

@@ -1,0 +1,17 @@
+临时域名： http://mb531376.mobantang.net
+主机地址： 139.129.181.241
+FTP账户：  qxu2060540240
+FTP密码：  ecmobancom12345aA
+数据库地址：qdm106277472.my3w.com
+phpMyAdmin地址：http://phpmyadmin.hichina.com/phpmyadmin/index.php?serverid=qdm106277472.my3w.com&uid=qdm106277472
+数据库账号：qdm106277472
+数据库密码：cy8zzr0i63
+
+
+前台地址：	
+http://mb531376.mobantang.net/index.php
+
+管理地址：	
+http://mb531376.mobantang.net/admin
+管理员账号：	admin
+管理员密码：	admin123
